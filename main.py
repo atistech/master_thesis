@@ -5,27 +5,62 @@ import datasets
 dataset = datasets.MnistDataset()
 
 from population import Population
-population = Population()
+import time
 
-fittest = None
-secondFittest = None
-generationCount = 0
+class Main:
+    firstFittest = object()
+    secondFittest = object()
+    generationCount = 0
 
-population.calculateFitness(dataset)
-print("Generation: {}  Fittest: {}"
-    .format(generationCount, population.fittest))
+    def __init__(self):
+        self.population = Population()
+        self.population.calculateFitness(dataset)
+        print("Generation: {}  Fittest: {}"
+            .format(self.generationCount, self.population.fittest))
 
-while population.fittest < 92:
-    ++generationCount
+        while self.population.fittest < 93:
+            self.generationCount += 1
 
-    # selection()
-    # crossover()
-    # mutation()
-    # addFittestOffspring()
+            self.selection()
+            self.crossOver()
+            self.mutation()
+            self.addFittestOffspring()
     
-    population.calculateFitness(dataset)
-    print("Generation: {} Fittest: {}".format(generationCount, population.fittest))
+            self.population.calculateFitness(dataset)
+            print("Generation: {} Fittest: {}".format(self.generationCount, self.population.fittest))
 
-print("Solution found in generation " + str(generationCount))
-print("Fitness: " + str(population.getFittest().fitness))
-print("Model: " + str(population.getFittest().model_text))
+            time.sleep(10)
+
+        print("Solution found in generation " + str(self.generationCount))
+        print("Fitness: " + str(self.population.getMostFittests()[0].fitness))
+        print("Model: " + str(self.population.getMostFittests()[0].model_text))
+
+    def selection(self):
+        first, second = self.population.getMostFittests()
+        self.firstFittest = first
+        self.secondFittest = second
+
+    def crossOver(self):
+        pass
+
+    def mutation(self):
+        pass
+
+    def addFittestOffspring(self):
+        # Update fitness values of offspring
+        print("update")
+        self.firstFittest.calcFitness(dataset)
+        self.secondFittest.calcFitness(dataset)
+        print("update")
+
+        # Replace least fittest individual from most fittest offspring
+        minFitIndex = self.population.getLeastFittestIndex()
+        self.population.individuals[minFitIndex] = self.getFittestOffspring()
+
+    def getFittestOffspring(self):
+        if self.firstFittest.fitness > self.secondFittest.fitness:
+            return self.firstFittest
+        return self.secondFittest
+
+if __name__ == "__main__":
+    Main()

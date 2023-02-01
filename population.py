@@ -15,16 +15,21 @@ class Population:
                 model_text = "784&dense_10_{}&{}/categorical_crossentropy&5".format(activation, optimizer)
                 self.individuals.append(Individual(model_text))
     
-    # Get the fittest individual
-    def getFittest(self):
-        maxFit = 90
-        maxFitIndex = 0
+    # Get the most fittest individuals
+    def getMostFittests(self):
+        self.individuals.sort(key=lambda i: i.fitness, reverse=True)
+        self.fittest = self.individuals[0].fitness
+        return self.individuals[0], self.individuals[1]
+
+    # Get index of the least fittest individual
+    def getLeastFittestIndex(self):
+        minFitVal = 100
+        minFitIndex = 0
         for index, individual in enumerate(self.individuals):
-            if maxFit <= individual.fitness:
-                maxFit = individual.fitness
-                maxFitIndex = index
-        self.fittest = self.individuals[maxFitIndex].fitness
-        return self.individuals[maxFitIndex]
+            if minFitVal >= individual.fitness:
+                minFitVal = individual.fitness
+                minFitIndex = index
+        return minFitIndex
     
     # Calculate fitness of each individual
     def calculateFitness(self, dataset):
@@ -39,4 +44,4 @@ class Population:
         for thread in threads:
             thread.join()
 
-        self.getFittest()
+        self.getMostFittests()

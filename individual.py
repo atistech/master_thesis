@@ -37,6 +37,7 @@ class Individual():
         epochs = int(self.fit_params[0])
         history = self.model.fit(trainX, trainY, epochs=epochs, batch_size=128, verbose=0)
         self.fitness = int(history.history["accuracy"][-1]*100)
+        print("Fitness: {} Model: {}".format(self.fitness, self.model_text))
 
     def model_text_parser(self, text):
         #Exp. 784&dense_10_relu&adam/categorical_crossentropy&10
