@@ -1,47 +1,53 @@
-from individual import Individual
+import individual
+import nn_params
 import threading
+import itertools
 
 class Population:
     individuals = []
     fittest = 0
 
-    def __init__(self):
-        activations = ["relu", "sigmoid", "softmax", "softplus", "softsign", "tanh", "selu"]
-        activations2 = ["relu", "sigmoid"]
-        optimizers = ["rmsprop", "adam"]
-
-        for activation in activations2:
-            for optimizer in optimizers:
-                model_text = "784&dense_10_{}&{}/categorical_crossentropy&5".format(activation, optimizer)
-                self.individuals.append(Individual(model_text))
+    def __init__(self, dataset):
+        # Define dataset for all individuals
+        self.dataset = dataset
+        # Create a list with dot product
+        productList = list(itertools.product(nn_params.activations()[:2], nn_params.optimizers()))
+        for item in productList:
+            layer = individual.Layer(output=10, activation=item[0])
+            new_individual = individual.Individual(input=self.dataset["input"], layers=[layer], 
+                optimizer=item[1], epochs=5)
+            self.individuals.append(new_individual)
     
-    # Get the most fittest individuals
-    def getMostFittests(self):
-        self.individuals.sort(key=lambda i: i.fitness, reverse=True)
-        self.fittest = self.individuals[0].fitness
-        return self.individuals[0], self.individuals[1]
-
-    # Get index of the least fittest individual
-    def getLeastFittestIndex(self):
-        minFitVal = 100
-        minFitIndex = 0
-        for index, individual in enumerate(self.individuals):
-            if minFitVal >= individual.fitness:
-                minFitVal = individual.fitness
-                minFitIndex = index
-        return minFitIndex
+    # Genetic Crossing Over
+    def geneticCrossingOver(self, threshold):
+        fittests = [ i for i in self.individuals if i.fitness>=threshold ]
+        self.individuals.clear()
+        
+        productList = list(itertools.product(nn_params.activations(), nn_params.optimizers(), fittests))
+        
+        for item in productList:
+            layers = [individual.Layer(output=10, activation=item[0]),]
+            layers.extend(item[2].layers)
+            new_individual = individual.Individual(input=self.dataset["input"], layers=layers, 
+                optimizer=item[1], epochs=5)
+            self.individuals.append(new_individual)
     
-    # Calculate fitness of each individual
-    def calculateFitness(self, dataset):
+    # Calculate fitness of all individuals
+    def calculateFitness(self):
         threads = []
+        # Calculate fitness of each individual with multi-threading
         for individual in self.individuals:
-            thread = threading.Thread(target=individual.calcFitness, args=(dataset,))
-            threads.append(thread)
+            threads.append(threading.Thread(target=individual.calcFitness, args=(self.dataset,)))
 
+        # Start for all threads
         for thread in threads:
             thread.start()
 
+        # Wait for all threads to executed
         for thread in threads:
             thread.join()
-
-        self.getMostFittests()
+        
+        # Save the fittest score and fittest model
+        self.individuals.sort(key=lambda i: i.fitness, reverse=True)
+        self.fittest_model = self.individuals[0].toString()
+        self.fittest = self.individuals[0].fitness

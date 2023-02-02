@@ -10,6 +10,7 @@ def MnistDataset():
     train_y = to_categorical(train_y)
     test_y = to_categorical(test_y)
     return {
+        "input":  28*28,
         "train_x": train_x,
         "train_y": train_y,
         "test_x": test_x,
