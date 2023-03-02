@@ -47,7 +47,7 @@ class Individual():
         valX = dataset["test_x"]
         valY = dataset["test_y"]
         # Train the model
-        history = self.model.fit(trainX, trainY, validationX=valX, validationY=valY,epochs=self.epochs, batch_size=self.batchSize, verbose=0)
+        history = self.model.fit(trainX, trainY, validation_data=(valX, valY),epochs=self.epochs, batch_size=self.batchSize, verbose=0)
         # Set last accuracy of the model as fitness score
         self.fitness = int(history.history["val_accuracy"][-1]*100)
         # Show 
