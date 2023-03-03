@@ -1,40 +1,63 @@
 import random
 import nn_params
 
-'''
-def rand_key(length):
-    random_bin = ""
-    for i in range(length):
-        random_bin += str(random.randint(0, 1))
-    return(random_bin)
+def splitStringByN(input, n):
+    return [input[i:i+n] for i in range(0, len(input), n)]
 
+def decimalToBinary(input):
+    return f'{input:04b}'
 
-random_bin = rand_key(4)
-i = 0
-while(i == 0):
-    for key,value in nn_params.activations().items():
-        if value == random_bin:
-            i += 1
-            print(key)
-    random_bin = rand_key(4)
-'''
+def binaryToDecimal(input):
+    return int(input, 2)
 
 def random_encode():
     result = ""
 
-    activations = nn_params.activations()
-    a = random.randrange(len(activations))
-    result += str(activations[a])
-    result += f'{a:04b}'
+    layerNums_length = len(nn_params.layerNums())
+    layerNums_random = random.randrange(layerNums_length)
+    result += decimalToBinary(layerNums_random)
 
-    optimizers = nn_params.optimizers()
-    b = random.randrange(len(optimizers))
-    result += str(optimizers[b])
-    result += f'{b:04b}'
+    layerTypes_length = len(nn_params.layerTypes())
+    layerTypes_random = random.randrange(layerTypes_length)
+    result += decimalToBinary(layerTypes_random)
+
+    layerOutputs_length = len(nn_params.layerOutputs())
+    layerOutputs_random = random.randrange(layerOutputs_length)
+    result += decimalToBinary(layerOutputs_random)
+
+    activations_length = len(nn_params.activations())
+    activations_random = random.randrange(activations_length)
+    result += decimalToBinary(activations_random)
+
+    optimizers_length = len(nn_params.optimizers())
+    optimizers_random = random.randrange(optimizers_length)
+    result += decimalToBinary(optimizers_random)
 
     return result
 
-def decode():
-    return None
+def decode(input):
+    splittedInput = splitStringByN(input, 4)
 
-print(random_encode())
+    layerNums_index = binaryToDecimal(splittedInput[0])
+    layerNums = nn_params.layerNums()[layerNums_index]
+
+    layerTypes_index = binaryToDecimal(splittedInput[1])
+    layerTypes = nn_params.layerTypes()[layerTypes_index]
+
+    layerOutputs_index = binaryToDecimal(splittedInput[2])
+    layerOutputs = nn_params.layerOutputs()[layerOutputs_index]
+
+    activation_index = binaryToDecimal(splittedInput[3])
+    activation = nn_params.activations()[activation_index]
+    
+    optimizer_index = binaryToDecimal(splittedInput[4])
+    optimizer = nn_params.optimizers()[optimizer_index]
+
+    return str(layerNums)+"-"+str(layerTypes)+"-"+str(layerOutputs)+"-"+str(activation)+"-"+str(optimizer)
+
+
+
+model = random_encode()
+print("Encoded: "+model)
+decoded = decode(model)
+print("Decoded: "+str(decoded))
