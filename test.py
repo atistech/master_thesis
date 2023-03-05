@@ -13,9 +13,8 @@ def deneme(x):
     deneme = [10, 10, 10]
     last = main_input
     for i in range(3):
-        temp = Dense(deneme[i], name=x+str(i))(last)
-        last = temp
-    return Dense(1, name=x+str(3))(last)
+        last = Dense(deneme[i])(last)
+    return Dense(10, activation="softmax")(last)
 
 outputs = []
 for i in range(10):
@@ -26,14 +25,17 @@ model = Model(inputs=main_input,
 )
 
 model.compile(optimizer='adam',
-             loss='mean_squared_error'
+             loss='categorical_crossentropy',
+             metrics=["accuracy"]
              )
 
-model.summary()
+#model.summary()
 
 
 
 history = model.fit(dataset["train_x"], dataset["train_y"], 
             epochs=5, batch_size=600, verbose=0)
 
-print(history.history)
+for key,value in enumerate(history.history):
+    if value.endswith("accuracy"):
+        print(str(history.history[value][-1]*100))

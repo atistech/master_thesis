@@ -1,8 +1,8 @@
-from individual import Individual,Layer
-import nn_params
+from individual import Individual
 import threading
-import itertools
 import encoder_decoder as ed
+from keras.models import Model
+from keras.layers import Input
 
 class Population:
     popSize = 10
@@ -12,40 +12,35 @@ class Population:
     def __init__(self, dataset):
         # Define dataset for all individuals
         self.dataset = dataset
+        self.input = Input(shape=(self.dataset["input"], ))
         # Create random individuals 
         for i in range(self.popSize):
             bitString = ed.random_encode()
-            model = ed.decode(bitString)
-            new_individual = Individual(input=self.dataset["input"], bitString=bitString, model=model)
+            new_individual = Individual(input=self.input, bitString=bitString)
             self.individuals.append(new_individual)
-    
-    # Genetic Crossing Over
-    def geneticCrossingOver(self):
-        self.individuals.sort(key=lambda i: i.fitness, reverse=True)
-        first = self.individuals[0]
-        second = self.individuals[1]
-        self.individuals.clear()
 
-        for i in range(self.popSize):
-            bitString = ed.random_encode()
-            model = ed.decode(bitString)
-            new_individual = Individual(input=self.dataset["input"], bitString=bitString, model=model)
-            self.individuals.append(new_individual)
-    
     # Calculate fitness of all individuals
     def calculateFitness(self):
-        threads = []
-        # Calculate fitness of each individual with multi-threading
-        for individual in self.individuals:
-            threads.append(threading.Thread(target=individual.calculateFitness, args=(self.dataset,)))
+        
+        outputs = [i.output for i in self.individuals]
+        model = Model(inputs=self.input, outputs=outputs)
 
-        # Start for all threads
-        for thread in threads:
-            thread.start()
+        model.compile(optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=["accuracy"]
+        )
 
-        # Wait for all threads to executed
-        for thread in threads:
-            thread.join()
+        history = model.fit(self.dataset["train_x"], self.dataset["train_y"],
+            validation_data=(self.dataset["test_x"], self.dataset["test_y"]),
+            epochs=5, batch_size=600, verbose=0)
+
+        index = 0
+        for h in history.history:
+            if h.startswith("val") and h.endswith("accuracy"):
+                score = history.history[h][-1]*100
+                self.individuals[index].fitness = score
+                print(str(score) + " " + self.individuals[index].bitString)
+                index += 1
         
         # Save the fittest score and fittest model
         self.individuals.sort(key=lambda i: i.fitness, reverse=True)

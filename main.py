@@ -3,6 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import datasets
 import population
+import genetic_algorithm as GA
 # import time
 # time.sleep(10)
 
@@ -26,14 +27,17 @@ class Main:
             .format(self.generationCount, self.population.fittest, self.population.fittest_model))
 
         # Generate new generations along the population's highest fitness score less than 93
-        while self.population.fittest < 93:
+        while self.generationCount < 10:
             # Increase the generation count by 1
             self.generationCount += 1
 
-            # Generate new individuals in population with result of 
-            # genetic crossing over on population's fittest individuals
-            # according to last best fitness score
-            self.population.geneticCrossingOver()
+            #selection
+            selectedIndividuals = GA.selection(self.population.individuals)
+
+            # cross over
+            GA.crossOver(self.dataset["input"], selectedIndividuals)
+
+
             
             # Calculate fitness of population's all individuals
             self.population.calculateFitness()
