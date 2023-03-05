@@ -1,62 +1,47 @@
 from keras.models import Sequential
 from keras.layers import Input, Dense
 
+class Model():
+    # Model() constructor
+    def __init__(self, layerNum, layers, optimizer):
+        self.layerNum = layerNum
+        self.layers = layers
+        self.optimizer = optimizer
+
 class Layer():
     # Layer() constructor
-    def __init__(self, output, activation):
+    def __init__(self, name, output, activation):
         # Define parameters of layer
+        self.name = name
         self.output = output
         self.activation = activation
 
 class Individual():
     # Define fitness score as 0
     fitness = 0
+    bitString = ""
 
     # Individual() constructor
-    def __init__(self, input, layers, optimizer, epochs):
-        # Define parameters of model architecture
-        self.input = input
-        self.layers = layers
-        
-        # Define parameters of compile function
-        self.optimizer = optimizer
-        self.loss = "categorical_crossentropy"
-        self.metrics = ["accuracy"]
-
-        # Define parameters of fit function
-        self.epochs = epochs
-        self.batchSize = 600
-
+    def __init__(self, input, bitString, model):
+        self.bitString = bitString
         # Define a sequential model
         self.model = Sequential()
         # Add input layer to model
-        self.model.add(Input(shape=(self.input,)))
+        self.model.add(Input(shape=(input,)))
 
         # Add all layers to model
-        for layer in self.layers:
-            self.model.add(Dense(layer.output, activation=layer.activation))
+        for layer in model.layers:
+            self.model.add(Dense(units=layer.output, activation=layer.activation))
+        self.model.add(Dense(10, activation="softmax"))
 
         # Configures the model for training
-        self.model.compile(optimizer=self.optimizer, loss=self.loss, metrics=self.metrics)
+        self.model.compile(optimizer=model.optimizer, loss="categorical_crossentropy", metrics=["accuracy"])
 
     # Calculate Fitness Score
-    def calcFitness(self, dataset):
-        # Define x and y of dataset
-        trainX = dataset["train_x"]
-        trainY = dataset["train_y"]
-        valX = dataset["test_x"]
-        valY = dataset["test_y"]
+    def calculateFitness(self, dataset):
         # Train the model
-        history = self.model.fit(trainX, trainY, validation_data=(valX, valY),epochs=self.epochs, batch_size=self.batchSize, verbose=0)
+        history = self.model.fit(dataset["train_x"], dataset["train_y"], 
+            validation_data=(dataset["test_x"], dataset["test_y"]), 
+            epochs=5, batch_size=600, verbose=0)
         # Set last accuracy of the model as fitness score
         self.fitness = int(history.history["val_accuracy"][-1]*100)
-        # Show 
-        print("Fitness: {} Model: {}".format(self.fitness, self.toString()))
-
-    # Convert model of individual to string
-    def toString(self):
-        # Example: 784&dense_10_relu&adam/categorical_crossentropy&10
-        layer_str = ""
-        for l in self.layers:
-            layer_str += "dense_{}_{}/".format(l.output, l.activation)
-        return "{}&{}&{}/{}&{}".format(self.input, layer_str, self.optimizer, self.loss, self.epochs)

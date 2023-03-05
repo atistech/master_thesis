@@ -33,7 +33,7 @@ class Main:
             # Generate new individuals in population with result of 
             # genetic crossing over on population's fittest individuals
             # according to last best fitness score
-            self.population.geneticCrossingOver(threshold=self.population.fittest)
+            self.population.geneticCrossingOver()
             
             # Calculate fitness of population's all individuals
             self.population.calculateFitness()
