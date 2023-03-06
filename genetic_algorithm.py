@@ -14,11 +14,13 @@ def crossOver(input, parents):
     crossPoint = random.randint(1,3)
     first_cross_part_1 = parents[0].bitString[:crossPoint*12]
     first_cross_part_2 = parents[0].bitString[crossPoint*12:]
-    second_cross_part_1 = parents[0].bitString[:crossPoint*12]
+    second_cross_part_1 = parents[1].bitString[:crossPoint*12]
     second_cross_part_2 = parents[1].bitString[crossPoint*12:]
-    changeValues(first_cross_part_2, second_cross_part_2)
+    changeValues(first_cross_part_1, second_cross_part_1)
         
     bitString_1 = first_cross_part_1 + first_cross_part_2
     bitString_2 = second_cross_part_1 + second_cross_part_2
-    parents[0] = Individual(input, bitString_1)
-    parents[1] = Individual(input, bitString_2)
+    offspringIndividuals = []
+    offspringIndividuals.append(Individual(input, bitString_1))
+    offspringIndividuals.append(Individual(input, bitString_2))
+    return offspringIndividuals

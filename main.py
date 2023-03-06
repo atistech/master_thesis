@@ -35,8 +35,9 @@ class Main:
             selectedIndividuals = GA.selection(self.population.individuals)
 
             # cross over
-            GA.crossOver(self.dataset["input"], selectedIndividuals)
-
+            self.population.individuals.clear()
+            offsprings = GA.crossOver(self.dataset["input"], selectedIndividuals)
+            self.population.individuals.extend(offsprings)
 
             
             # Calculate fitness of population's all individuals
