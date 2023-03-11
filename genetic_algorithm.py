@@ -10,7 +10,7 @@ def changeValues(first, second):
     first = second
     second =  temp
 
-def crossOver(input, parents):
+def crossOver(population, parents):
     crossPoint = random.randint(1,3)
     first_cross_part_1 = parents[0].bitString[:crossPoint*12]
     first_cross_part_2 = parents[0].bitString[crossPoint*12:]
@@ -21,6 +21,8 @@ def crossOver(input, parents):
     bitString_1 = first_cross_part_1 + first_cross_part_2
     bitString_2 = second_cross_part_1 + second_cross_part_2
     offspringIndividuals = []
-    offspringIndividuals.append(Individual(input, bitString_1))
-    offspringIndividuals.append(Individual(input, bitString_2))
+    #offspringIndividuals.append(Individual(input, bitString_1))
+    #offspringIndividuals.append(Individual(input, bitString_2))
+    offspringIndividuals.append(population.createNewIndividual(bitString_1))
+    offspringIndividuals.append(population.createNewIndividual(bitString_2))
     return offspringIndividuals

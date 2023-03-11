@@ -23,8 +23,7 @@ class Main:
         self.population.calculateFitness()
 
         # Show the highest fitness score of current generation
-        print("Generation: {}  Fittest Score: {} Fittest Model: {}"
-            .format(self.generationCount, self.population.fittest, self.population.fittest_model))
+        print(self.population.populationResult(self.generationCount))
 
         # Generate new generations along the population's highest fitness score less than 93
         while self.generationCount < 10:
@@ -36,7 +35,7 @@ class Main:
 
             # cross over
             self.population.individuals.clear()
-            offsprings = GA.crossOver(self.dataset["input"], selectedIndividuals)
+            offsprings = GA.crossOver(self.population, selectedIndividuals)
             self.population.individuals.extend(offsprings)
 
             
@@ -44,13 +43,11 @@ class Main:
             self.population.calculateFitness()
 
             # Show the highest fitness score of current generation
-            print("Generation: {}  Fittest Score: {} Fittest Model: {}"
-                .format(self.generationCount, self.population.fittest, self.population.fittest_model))
+            print(self.population.populationResult(self.generationCount))
 
         # Show the solution found
-        print("Solution found in generation " + str(self.generationCount))
-        print("Fitness: " + str(self.population.fittest))
-        print("Model: " + str(self.population.fittest_model))
+        print("Solution found.")
+        print(self.population.populationResult(self.generationCount))
 
 if __name__ == "__main__":
     Main()

@@ -1,8 +1,8 @@
 from individual import Individual
-import threading
+import encoder_decoder as ED
 import encoder_decoder as ed
 from keras.models import Model
-from keras.layers import Input
+from keras.layers import Dense, Input
 
 class Population:
     popSize = 10
@@ -16,8 +16,19 @@ class Population:
         # Create random individuals 
         for i in range(self.popSize):
             bitString = ed.random_encode()
-            new_individual = Individual(input=self.input, bitString=bitString)
+            #new_individual = Individual(input=self.dataset["input"], bitString=bitString)
+            new_individual = self.createNewIndividual(bitString)
             self.individuals.append(new_individual)
+
+    def createNewIndividual(self, bitString):
+        newIndividual = Individual()
+        newIndividual.bitString = bitString
+        layers = ED.decode(bitString)
+        last = self.input
+        for layer in layers:
+            last = Dense(units=layer.output, activation=layer.activation)(last)
+        newIndividual.output = Dense(units=10, activation="softmax")(last)
+        return newIndividual
 
     # Calculate fitness of all individuals
     def calculateFitness(self):
@@ -46,3 +57,7 @@ class Population:
         self.individuals.sort(key=lambda i: i.fitness, reverse=True)
         self.fittest_model = self.individuals[0].bitString
         self.fittest = self.individuals[0].fitness
+
+    def populationResult(self, generationCount):
+        return "Generation: {}  Fittest Score: {} Fittest Model: {}".format(
+            generationCount, self.fittest, self.fittest_model)
