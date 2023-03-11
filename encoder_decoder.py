@@ -1,5 +1,5 @@
 import random
-import nn_params
+import nn.nn_params as nn_params
 
 class Layer():
     def __init__(self, name, output, activation):

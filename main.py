@@ -2,52 +2,23 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import datasets
-import population
-import genetic_algorithm as GA
-# import time
-# time.sleep(10)
+from genetic_algorithm import GeneticAlgorithm
 
-class Main:
-    # Define a dataset
-    dataset = datasets.MnistDataset()
+dataset = datasets.MnistDataset()
+generationCount = 0
 
-    # Define generation count as 0
-    generationCount = 0
+algorithm = GeneticAlgorithm()
 
-    # Main() constructor
-    def __init__(self):
-        # Define a population with a dataset
-        self.population = population.Population(self.dataset)
+algorithm.createRandomPopulation(dataset)
+algorithm.calculateFitness()
+print(algorithm.populationResult(generationCount))
 
-        # Calculate fitness of population's all individuals
-        self.population.calculateFitness()
+while generationCount < 10:
+    generationCount += 1
+    algorithm.selection()
+    algorithm.crossOver()
+    algorithm.calculateFitness()
+    print(algorithm.populationResult(generationCount))
 
-        # Show the highest fitness score of current generation
-        print(self.population.populationResult(self.generationCount))
-
-        # Generate new generations along the population's highest fitness score less than 93
-        while self.generationCount < 10:
-            # Increase the generation count by 1
-            self.generationCount += 1
-
-            #selection
-            selectedIndividuals = GA.selection(self.population.individuals)
-
-            # cross over
-            self.population.individuals.clear()
-            offsprings = GA.crossOver(self.population, selectedIndividuals)
-            self.population.individuals.extend(offsprings)
-
-            
-            # Calculate fitness of population's all individuals
-            self.population.calculateFitness()
-
-            # Show the highest fitness score of current generation
-            print(self.population.populationResult(self.generationCount))
-
-        # Show the solution found
-        print("Solution found.")
-        print(self.population.populationResult(self.generationCount))
-
-if __name__ == "__main__":
-    Main()
+print("Solution found.")
+print(algorithm.populationResult(generationCount))
