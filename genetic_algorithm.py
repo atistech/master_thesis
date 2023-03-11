@@ -47,5 +47,6 @@ class GeneticAlgorithm():
         bitString_2 = second_cross_part_1 + second_cross_part_2
 
         self.population.clear()
-        self.population.append(population.createNewIndividual(bitString_1))
-        self.population.append(population.createNewIndividual(bitString_2))
+        self.neuralNetwork.models.clear()
+        self.neuralNetwork.createModels([bitString_1, bitString_2])
+        self.population = self.neuralNetwork.models
