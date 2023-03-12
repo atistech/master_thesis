@@ -7,7 +7,7 @@ def layerTypes():
     return ["dense"]
 
 def layerOutputs():
-    return [2, 4, 8, 10 ,12]
+    return [2, 4, 8, 16, 32, 64, 128, 256, 512]
 
 # Activation functions of neural networks
 def activations():

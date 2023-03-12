@@ -1,11 +1,18 @@
+from tensorflow.python.client import device_lib
+import tensorflow as tf
+print(device_lib.list_local_devices())
+print(tf.config.list_physical_devices())
+
+
+'''
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from keras.layers import Input, Dense
 from keras.models import Model
-import datasets
+import nn.nn_datasets as nn_datasets
 
-dataset = datasets.MnistDataset()
+dataset = nn_datasets.MnistDataset()
 main_input = Input(shape=(dataset["input"], ))
 
 
@@ -39,3 +46,5 @@ history = model.fit(dataset["train_x"], dataset["train_y"],
 for key,value in enumerate(history.history):
     if value.endswith("accuracy"):
         print(str(history.history[value][-1]*100))
+
+'''

@@ -1,28 +1,27 @@
 from keras.models import Model
 from keras.layers import Dense, Input
-from individual import Individual
-import encoder_decoder as ED
+from model import Model as EntityModel
+import nn.nn_datasets as nn_datasets
 
 class NN:
-    models = []
-
-    def __init__(self, dataset):
-        self.dataset = dataset
+    def __init__(self, datasetIndex):
+        if(datasetIndex == 0):
+            self.dataset = nn_datasets.MnistDataset()
         self.input = Input(shape=(self.dataset["input"], ))
 
     def createModels(self, bitStrings):
+        newModels = []
         for bitString in bitStrings:
-            newIndividual = Individual()
-            newIndividual.bitString = bitString
-            layers = ED.decode(bitString)
+            newModel = EntityModel(bitString)
             last = self.input
-            for layer in layers:
+            for layer in newModel.layers:
                 last = Dense(units=layer.output, activation=layer.activation)(last)
-            newIndividual.output = Dense(units=10, activation="softmax")(last)
-            self.models.append(newIndividual)
+            newModel.output = Dense(units=10, activation="softmax")(last)
+            newModels.append(newModel)
+        return newModels
 
-    def calculateResults(self):
-        outputs = [i.output for i in self.models]
+    def calculateResults(self, models):
+        outputs = [i.output for i in models]
         model = Model(self.input, outputs)
 
         model.compile(optimizer='adam',
@@ -37,6 +36,6 @@ class NN:
         index = 0
         for h in history.history:
             if h.startswith("val") and h.endswith("accuracy"):
-                self.models[index].fitness = history.history[h][-1]*100
+                models[index].fitness = history.history[h][-1]*100
                 index += 1
-        return self.models
+        return models

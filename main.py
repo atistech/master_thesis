@@ -1,15 +1,10 @@
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-import datasets
 from genetic_algorithm import GeneticAlgorithm
 
-dataset = datasets.MnistDataset()
 generationCount = 0
 
-algorithm = GeneticAlgorithm()
+algorithm = GeneticAlgorithm(0)
 
-algorithm.createRandomPopulation(dataset)
+algorithm.createRandomPopulation()
 algorithm.calculateFitness()
 print(algorithm.populationResult(generationCount))
 

@@ -2,10 +2,11 @@ import random
 import nn.nn_params as nn_params
 
 class Layer():
-    def __init__(self, name, output, activation):
+    def __init__(self, name, output, activation, bitParts):
         self.name = name
         self.output = output
         self.activation = activation
+        self.bitParts = bitParts
 
 layerNums = nn_params.layerNums()
 layerTypes = nn_params.layerTypes()
@@ -42,5 +43,6 @@ def decode(input):
             name = decode_node(param[0], layerTypes)
             output = decode_node(param[1], layerOutputs)
             activation = decode_node(param[2], layerActivations)
-            layers.append(Layer(name, output, activation))
+            bitParts = splittedInput
+            layers.append(Layer(name, output, activation, bitParts))
     return layers
