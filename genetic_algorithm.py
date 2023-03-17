@@ -1,6 +1,5 @@
 import random
 from nn.nn import NN
-import nn.nn_datasets as nn_datasets
 import encoder_decoder as ED
 
 class GeneticAlgorithm():

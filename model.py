@@ -1,4 +1,3 @@
-from keras.layers import Dense
 import encoder_decoder as ED
 
 class Model():
