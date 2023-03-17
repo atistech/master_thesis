@@ -1,6 +1,6 @@
 from keras.models import Model
 from keras.layers import Dense, Input
-from model import Model as EntityModel
+from individual import Individual as EntityModel
 import nn.nn_datasets as nn_datasets
 
 class NN:

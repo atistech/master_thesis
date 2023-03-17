@@ -1,17 +1,19 @@
 import random
 from nn.nn import NN
 import encoder_decoder as ED
+from individual import Individual
 
 class GeneticAlgorithm():
     popSize = 10
     population = []
 
     def __init__(self, dataset):
-        self.neuralNetwork = NN(dataset)
+        self.dataset = dataset
+        self.input = self.dataset["input"]
 
     def createRandomPopulation(self):
-        bitStrings = [ED.random_encode() for i in range(self.popSize)]
-        self.population = self.neuralNetwork.createModels(bitStrings)
+        for i in range(self.popSize):
+            self.population.append(Individual(self.input))
 
     def calculateFitness(self):
         models = self.neuralNetwork.calculateResults(self.population)
@@ -32,29 +34,25 @@ class GeneticAlgorithm():
             r = random.randint(2, len(self.population)-1)
             self.selecteds.append(self.population[r])
 
-    def changeValues(self, first, second):
-        temp = first
-        first = second
-        second =  temp
+    def __changeGenesRandomly(self, first, second):
+        crossPoint = random.randint(1,3)
+        first_cross_part_1 = first.genes[:crossPoint]
+        first_cross_part_2 = first.genes[crossPoint:]
+        second_cross_part_1 = second.genes[:crossPoint]
+        second_cross_part_2 = second.genes[crossPoint:]
+        return [
+            second_cross_part_1 + first_cross_part_2,
+            first_cross_part_1 + second_cross_part_2
+        ]
+
 
     def crossOver(self):
         self.population.clear()
-        self.population = self.neuralNetwork.createModels([self.selecteds[0].bitString, self.selecteds[1].bitString])
+        self.population.append(Individual(self.input, self.selecteds[0].chromosome))
+        self.population.append(Individual(self.input, self.selecteds[1].chromosome))
 
         for i in range(2, 6):
-            crossPoint = random.randint(1,3)
-            first_cross_part_1 = self.selecteds[i].bitString[:crossPoint*12]
-            first_cross_part_2 = self.selecteds[i].bitString[crossPoint*12:]
-            second_cross_part_1 = self.selecteds[i+4].bitString[:crossPoint*12]
-            second_cross_part_2 = self.selecteds[i+4].bitString[crossPoint*12:]
-            self.changeValues(first_cross_part_1, second_cross_part_1)
-            bitString_1 = first_cross_part_1 + first_cross_part_2
-            bitString_2 = second_cross_part_1 + second_cross_part_2
-
-            self.population.extend(self.neuralNetwork.createModels([bitString_1, bitString_2]))
-    
-    def mutation(self):
-        for p in self.population[2:]:
-            r = random.randint(0,4)
-            ED.random_encode()
-            p = self.neuralNetwork.createModels([bitString_1, bitString_2])
+            for newChromosome in self.__changeGenesRandomly(self.selecteds[i], self.selecteds[i+4]):
+                offspring = Individual(self.input, newChromosome)
+                offspring.mutation()
+                self.population.append(offspring)
