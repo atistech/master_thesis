@@ -1,31 +1,24 @@
-from tensorflow.python.client import device_lib
-import tensorflow as tf
-print(device_lib.list_local_devices())
-print(tf.config.list_physical_devices())
-
-
-'''
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from keras.layers import Input, Dense
 from keras.models import Model
-import nn.nn_datasets as nn_datasets
+import keras.utils
+import nn.Datasets as Datasets
 
-dataset = nn_datasets.MnistDataset()
-main_input = Input(shape=(dataset["input"], ))
+dataset = Datasets.MnistDataset()
+main_input = dataset["input"]
 
-
-def deneme(x):
+def deneme(x, index):
     deneme = [10, 10, 10]
     last = main_input
     for i in range(3):
         last = Dense(deneme[i])(last)
-    return Dense(10, activation="softmax")(last)
+    return Dense(10, activation="softmax", name=index)(last)
 
 outputs = []
 for i in range(10):
-    outputs.append(deneme(str(i)+"-"))
+    outputs.append(deneme(str(i)+"-", str(i+1)))
 
 model = Model(inputs=main_input,
               outputs=outputs,
@@ -41,10 +34,11 @@ model.compile(optimizer='adam',
 
 
 history = model.fit(dataset["train_x"], dataset["train_y"], 
-            epochs=5, batch_size=600, verbose=0)
+                    validation_data=(dataset["test_x"], dataset["test_y"]), 
+                    epochs=5, batch_size=600, verbose=0)
 
 for key,value in enumerate(history.history):
     if value.endswith("accuracy"):
         print(str(history.history[value][-1]*100))
 
-'''
+keras.utils.plot_model(model, "my_first_model_with_shape_info.png", show_shapes=True)
