@@ -15,5 +15,9 @@ def MnistDataset():
         "train_x": train_x,
         "train_y": train_y,
         "test_x": test_x,
-        "test_y": test_y
+        "test_y": test_y,
+        "output": {
+                    "activation": "softmax",
+                    "output": 10
+                }
     }

@@ -3,24 +3,27 @@ import random
 
 class NetworkModel():
     
-    def __init__(self):
-        self.layers = []
-        layersCount = random.choice(Params.layerNums)
-        for i in range(layersCount):
-            self.layers.append({
-                "activation": random.choice(Params.layerActivations),
-                "output": random.choice(Params.layerOutputs)
-            })
-        for i in range(4-layersCount):
-            self.layers.append({
-                "activation": "",
-                "output": ""
-            })
+    def __init__(self, isRandom, layers):
+        if isRandom:
+            self.layers = []
+            layersCount = random.choice(Params.layerNums)
+            for i in range(layersCount):
+                self.layers.append({
+                    "activation": random.choice(Params.layerActivations),
+                    "output": random.choice(Params.layerOutputs)
+                })
+            for i in range(4-layersCount):
+                self.layers.append({
+                    "activation": "",
+                    "output": ""
+                })
+        else:
+            self.layers = layers
 
     def updateLayersRandomly(self):
-        howManyTimes = random.randint(0,3)
-        for i in range(howManyTimes):
-            index = random.randint(0,3)
+        layersLength = len(self.layers)
+        for i in range(random.randint(1, layersLength)):
+            index = random.randint(0, layersLength-1)
             self.layers[index] = {
                     "activation": random.choice(Params.layerActivations),
                     "output": random.choice(Params.layerOutputs)

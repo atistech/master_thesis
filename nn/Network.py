@@ -16,15 +16,16 @@ class Network:
 
     def __modelToKeras(self, model):
         last = self.dataset["input"]
+        model.layers.append(self.dataset["output"])
         for layer in model.layers:
             if layer["activation"] != "":
                 last = Dense(units=layer["output"], activation=layer["activation"])(last)
-        model.output = Dense(units=10, activation="softmax")(last)
+        model.output = last
         return model
 
     def createRandomModels(self, howManyPiece):
         for i in range(howManyPiece):
-            self.models.append(self.__modelToKeras(NetworkModel()))
+            self.models.append(self.__modelToKeras(NetworkModel(True, [])))
 
     def createModels(self, models):
         for model in models:
