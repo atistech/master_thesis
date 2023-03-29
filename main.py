@@ -2,7 +2,7 @@ from GeneticAlgorithm import GeneticAlgorithm
 
 generationCount = 0
 
-algorithm = GeneticAlgorithm(popSize=10)
+algorithm = GeneticAlgorithm(popSize=10, datasetSelection=0)
 
 algorithm.initialPopulation()
 algorithm.calculateFitness()
