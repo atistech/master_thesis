@@ -13,6 +13,8 @@ class Network:
     def __init__(self, datasetSelection):
         if datasetSelection == 0:
             self.dataset = Datasets.MnistDataset()
+        elif datasetSelection == 1:
+            self.dataset = Datasets.FashionMnistDataset()
 
     def __modelToKeras(self, model):
         last = self.dataset["input"]
