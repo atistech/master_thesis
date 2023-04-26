@@ -2,10 +2,10 @@ from GeneticAlgorithm import GeneticAlgorithm
 
 generationCount = 0
 
-algorithm = GeneticAlgorithm(popSize=10, datasetSelection=0)
+algorithm = GeneticAlgorithm(popSize=10, datasetSelection=1)
 
 algorithm.initialPopulation()
-algorithm.calculateFitness()
+print(algorithm.calculateFitness())
 print(algorithm.populationResult(generationCount))
 
 while generationCount < 10:
@@ -13,7 +13,7 @@ while generationCount < 10:
     algorithm.selection()
     algorithm.crossOver()
     algorithm.mutation()
-    algorithm.calculateFitness()
+    print(algorithm.calculateFitness())
     print(algorithm.populationResult(generationCount))
 
 print("Solution found.")

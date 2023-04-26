@@ -41,8 +41,10 @@ class GeneticAlgorithm():
     def calculateFitness(self):
         self.network.calculateResults()
         self.network.models.sort(key=lambda i: i.fitness, reverse=True)
+        calculatedResults = []
         for model in self.network.models:
-            print("{} {}".format(model.fitness, model.toString()))
+            calculatedResults.append([model.fitness, model.toString()])
+        return calculatedResults
 
     def populationResult(self, generationCount):
         return "Generation: {}  Fittest Score: {} Fittest Model: {}".format(

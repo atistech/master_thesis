@@ -41,4 +41,4 @@ for key,value in enumerate(history.history):
     if value.endswith("accuracy"):
         print(str(history.history[value][-1]*100))
 
-keras.utils.plot_model(model, "my_first_model_with_shape_info.png", show_shapes=True)
+keras.utils.plot_model(model, "my_first_model_with_shape_info.png", show_shapes=True, show_layer_names=False, show_layer_activations=True)

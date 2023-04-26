@@ -11,3 +11,6 @@ layerActivations = ["relu", "sigmoid", "softmax", "softplus", "softsign", "tanh"
 
 # Optimizer functions of neural networks
 ModelOptimizers = ["rmsprop", "adam"]
+
+# Loss functions of neural networks
+ModelLossFunctions = ["categorical_crossentropy"]
