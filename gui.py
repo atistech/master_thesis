@@ -9,7 +9,7 @@ def combobox(root, text, values, row, column, isReadonly):
     combobox.set(values[0])
     combobox.grid(row=row, column=column, padx=5, pady=10)
     if isReadonly:
-        combobox.config(state="readonly")
+        combobox.config(state="disabled")
     return combobox
 
 def entry(root, text, value, row, column, isReadonly):
@@ -30,14 +30,18 @@ def load():
 def deneme():
     from GeneticAlgorithm import GeneticAlgorithm
     generationCount = 0
-    algorithm = GeneticAlgorithm(popSize=10, datasetSelection=1)
+    params_dict = {
+        "datasetSelection": 1
+    }
+    algorithm = GeneticAlgorithm(popSize=5, param_dict=params_dict)
     algorithm.initialPopulation()
     results = algorithm.calculateFitness()
     for result in results:
-        splitted_results = result[1].split('/')
-        tree2.insert("", 'end', 
-            values=(str(generationCount), str(result[0]), 80, splitted_results[0], splitted_results[1], splitted_results[2], splitted_results[3]))
-    print(algorithm.populationResult(generationCount))
+        values_to_insert = [generationCount, result.accuracy, result.loss, result.val_accuracy, result.val_loss, result.toString()]
+        tree2.insert("", 'end', values=values_to_insert)
+    result = algorithm.populationResult()
+    values_to_insert = [generationCount, result.accuracy, result.loss, result.val_accuracy, result.val_loss, result.toString()]
+    tree1.insert("", 'end', values=values_to_insert)
 
 window = tk.Tk()
 window.resizable(False, False)
@@ -45,6 +49,8 @@ window.title('Automatic Neural Network Search')
 
 output_string = tk.StringVar()
 input_string = tk.StringVar()
+epoch_string = tk.StringVar()
+batch_size_string = tk.StringVar()
 
 dataset_frame = tk.LabelFrame(window, text="Dataset Settings")
 dataset_frame.grid(row=0, column=0, padx=10, pady=10)
@@ -66,11 +72,17 @@ loss_function_select = combobox(model_frame, "Loss Function:", params.ModelLossF
 spacer = ttk.Label(model_frame).grid(row=1, column=2, padx=20, pady=10)
 optimizer_algorithm_select = combobox(model_frame, "Optimizer Algorithm:", params.ModelOptimizers, 1, 4, True)
 
+epoch_select = entry(model_frame, "Amount of Epoch:", epoch_string, 2, 1, True)
+epoch_string.set("5")
+spacer2 = ttk.Label(model_frame).grid(row=2, column=2, padx=20, pady=10)
+batch_size_select = entry(model_frame, "Batch Size:", batch_size_string, 2, 4, True)
+batch_size_string.set("600")
+
 start_button = ttk.Button(model_frame, text="START", command=load)
-start_button.grid(row=2, column=0, padx=10, pady=10)
+start_button.grid(row=3, column=0, padx=10, pady=10)
 
 deneme_button = ttk.Button(model_frame, text="DENEME", command=deneme)
-deneme_button.grid(row=2, column=1, padx=10, pady=10)
+deneme_button.grid(row=3, column=1, padx=10, pady=10)
 
 def createResultsView(root):
     sub_frame = tk.Frame(root)
@@ -78,18 +90,17 @@ def createResultsView(root):
     
     tree = ttk.Treeview(sub_frame, show="headings", selectmode="extended")
     tree["columns"] = ("1", "2", "3", "4", "5", "6", "7")
-    for i in range(8):
-        if i==1 or i==2 or i==3:
-            tree.column(str(i), width = 100, anchor ='c')
+    for i in range(7):
+        if i==6:
+            tree.column(str(i), width = 200, anchor ='w')
         else:
-            tree.column(str(i), width = 150, anchor ='c')
+            tree.column(str(i), width = 100, anchor ='c')
     tree.heading("1", text ="Generation")
     tree.heading("2", text ="Accuracy")
-    tree.heading("3", text ="Val-Accuracy")
-    tree.heading("4", text ="Hidden Layer 1")
-    tree.heading("5", text ="Hidden Layer 2")
-    tree.heading("6", text ="Hidden Layer 3")
-    tree.heading("7", text ="Hidden Layer 4")
+    tree.heading("3", text ="Loss")
+    tree.heading("4", text ="Val-Accuracy")
+    tree.heading("5", text ="Val-Loss")
+    tree.heading("6", text ="Model Architecture")
 
     tree_scroll_y = tk.Scrollbar(sub_frame, command=tree.yview)
     tree_scroll_y.pack(side="right", fill="y")

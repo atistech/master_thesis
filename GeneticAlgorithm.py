@@ -4,9 +4,9 @@ from nn.NetworkModel import NetworkModel
 
 class GeneticAlgorithm():
 
-    def __init__(self, popSize, datasetSelection):
+    def __init__(self, popSize, param_dict):
         self.popSize = popSize
-        self.network = Network(datasetSelection)
+        self.network = Network(param_dict["datasetSelection"])
 
     def initialPopulation(self):
         self.network.createRandomModels(self.popSize)
@@ -42,10 +42,8 @@ class GeneticAlgorithm():
         self.network.calculateResults()
         self.network.models.sort(key=lambda i: i.fitness, reverse=True)
         calculatedResults = []
-        for model in self.network.models:
-            calculatedResults.append([model.fitness, model.toString()])
+        calculatedResults.extend(self.network.models)
         return calculatedResults
 
-    def populationResult(self, generationCount):
-        return "Generation: {}  Fittest Score: {} Fittest Model: {}".format(
-            generationCount, self.network.models[0].fitness, self.network.models[0].toString())
+    def populationResult(self):
+        return self.network.models[0]

@@ -34,6 +34,4 @@ class NetworkModel():
         for layer in self.layers:
             if layer["activation"] != "":
                 toString += "dense-{}-{}/".format(layer["activation"], layer["output"])
-            else:
-                toString += "empty_layer/"
         return toString

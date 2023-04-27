@@ -1,20 +1,30 @@
 from GeneticAlgorithm import GeneticAlgorithm
 
 generationCount = 0
-
-algorithm = GeneticAlgorithm(popSize=10, datasetSelection=1)
+params_dict = {
+    "datasetSelection": 1
+}
+algorithm = GeneticAlgorithm(popSize=5, param_dict=params_dict)
 
 algorithm.initialPopulation()
-print(algorithm.calculateFitness())
-print(algorithm.populationResult(generationCount))
+for result in algorithm.calculateFitness():
+    print("Acc:{} Val_Acc:{} Model:{}".format(result.accuracy, result.val_accuracy, result.toString()))
+result = algorithm.populationResult()
+print("Generation: {}  Fittest Score: {} Fittest Model: {}"
+    .format(generationCount, result.fitness, result.toString()))
 
 while generationCount < 10:
     generationCount += 1
     algorithm.selection()
     algorithm.crossOver()
     algorithm.mutation()
-    print(algorithm.calculateFitness())
-    print(algorithm.populationResult(generationCount))
+    for result in algorithm.calculateFitness():
+        print("Acc:{} Val_Acc:{} Model:{}".format(result.accuracy, result.val_accuracy, result.toString()))
+    result = algorithm.populationResult()
+    print("Generation: {}  Fittest Score: {} Fittest Model: {}"
+        .format(generationCount, result.fitness, result.toString()))
 
 print("Solution found.")
-print(algorithm.populationResult(generationCount))
+result = algorithm.populationResult()
+print("Generation: {}  Fittest Score: {} Fittest Model: {}"
+    .format(generationCount, result.fitness, result.toString()))
