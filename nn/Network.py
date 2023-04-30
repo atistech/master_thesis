@@ -11,10 +11,11 @@ import uuid
 class Network:
     models = []
 
-    def __init__(self, datasetSelection):
-        if datasetSelection == "Mnist":
+    def __init__(self, param_dict):
+        self.param_dict = param_dict
+        if self.param_dict["datasetSelection"] == "Mnist":
             self.dataset = Datasets.MnistDataset()
-        elif datasetSelection == "Fashion Mnist":
+        elif self.param_dict["datasetSelection"] == "Fashion Mnist":
             self.dataset = Datasets.FashionMnistDataset()
 
     def __modelToKeras(self, model):
@@ -41,14 +42,14 @@ class Network:
         outputs = [i.output for i in self.models]
         model = Model(self.dataset["input"], outputs)
 
-        model.compile(optimizer='adam',
-            loss='categorical_crossentropy',
+        model.compile(optimizer=self.param_dict["optimizer"],
+            loss=self.param_dict["lossFunction"],
             metrics=["accuracy"]
         )
 
         history = model.fit(self.dataset["train_x"], self.dataset["train_y"],
             validation_data=(self.dataset["test_x"], self.dataset["test_y"]),
-            epochs=5, batch_size=600, verbose=0)
+            epochs=int(self.param_dict["epochs"]), batch_size=int(self.param_dict["batchSize"]), verbose=0)
 
         for i in range(len(self.models)):
             keys = [h for h in history.history if "{}_".format(self.models[i].name) in h]

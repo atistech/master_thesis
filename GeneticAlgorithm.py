@@ -6,7 +6,7 @@ class GeneticAlgorithm():
 
     def __init__(self, param_dict):
         self.popSize = int(param_dict["populationSize"])
-        self.network = Network(param_dict["datasetSelection"])
+        self.network = Network(param_dict)
 
     def initialPopulation(self):
         self.network.createRandomModels(self.popSize)

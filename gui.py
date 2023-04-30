@@ -26,7 +26,7 @@ def startSearch():
         "trainTestSplit": trainTestSplit_value.get(),
         "lossFunction": lossFunction_value.get(),
         "optimizer": optimizer_value.get(),
-        "epoch": epoch_value.get(),
+        "epochs": epoch_value.get(),
         "batchSize": batchSize_value.get(),
         "populationSize": populationSize_value.get()
     }
