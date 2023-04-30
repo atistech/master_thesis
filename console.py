@@ -2,9 +2,10 @@ from GeneticAlgorithm import GeneticAlgorithm
 
 generationCount = 0
 params_dict = {
-    "datasetSelection": 1
+    "datasetSelection": "Mnist",
+    "populationSize": 10
 }
-algorithm = GeneticAlgorithm(popSize=5, param_dict=params_dict)
+algorithm = GeneticAlgorithm(param_dict=params_dict)
 
 algorithm.initialPopulation()
 for result in algorithm.calculateFitness():

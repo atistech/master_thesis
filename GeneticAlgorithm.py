@@ -4,8 +4,8 @@ from nn.NetworkModel import NetworkModel
 
 class GeneticAlgorithm():
 
-    def __init__(self, popSize, param_dict):
-        self.popSize = popSize
+    def __init__(self, param_dict):
+        self.popSize = int(param_dict["populationSize"])
         self.network = Network(param_dict["datasetSelection"])
 
     def initialPopulation(self):

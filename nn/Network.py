@@ -12,9 +12,9 @@ class Network:
     models = []
 
     def __init__(self, datasetSelection):
-        if datasetSelection == 0:
+        if datasetSelection == "Mnist":
             self.dataset = Datasets.MnistDataset()
-        elif datasetSelection == 1:
+        elif datasetSelection == "Fashion Mnist":
             self.dataset = Datasets.FashionMnistDataset()
 
     def __modelToKeras(self, model):
