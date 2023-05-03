@@ -134,7 +134,7 @@ def createResultsTreeview(root):
     sub_frame = tk.Frame(root)
     sub_frame.pack(padx=10, pady=10)
     
-    tree = ttk.Treeview(sub_frame, show="headings", selectmode="extended")
+    tree = ttk.Treeview(sub_frame, show="headings", selectmode="browse")
     tree["columns"] = ("1", "2", "3", "4", "5", "6")
     for i in range(6):
         if i==6:
