@@ -19,7 +19,7 @@ class GeneticAlgorithm():
         self.network.models.clear()
         newModels = [self.firstFittestModel, self.secondFittestModel]
 
-        for i in range(4):
+        for i in range(int((self.popSize/2) - 1)):
             crossPoint = random.randint(1,3)
             
             firstLayers = []
