@@ -130,6 +130,11 @@ combobox.grid(row=0, column=4, padx=5, pady=10)
 
 ttk.Label(parameters_frame, text="Developed by Atakan Şentürk").pack(anchor='w', pady=10)
 
+def selectItem(a):
+    curItem = tree2.focus()
+    item = tree2.item(curItem)
+    messagebox.showinfo(message=str(item))
+
 def createResultsTreeview(root):
     sub_frame = tk.Frame(root)
     sub_frame.pack(padx=10, pady=10)
@@ -155,6 +160,7 @@ def createResultsTreeview(root):
     
     tree.configure(xscrollcommand=tree_scroll_x.set, yscrollcommand=tree_scroll_y.set)
     tree.pack()
+    tree.bind('<ButtonRelease-1>', selectItem)
     return tree
 
 best_results_frame = tk.LabelFrame(results_frame, text="Best Results")

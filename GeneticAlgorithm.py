@@ -1,22 +1,29 @@
 import random
-from nn.Network import Network
-from nn.NetworkModel import NetworkModel
+from nn.Model import Model
+import nn.Datasets as Datasets
 
 class GeneticAlgorithm():
+    individuals = []
 
     def __init__(self, param_dict):
+        self.param_dict = param_dict
         self.popSize = int(param_dict["populationSize"])
-        self.network = Network(param_dict)
+        if self.param_dict["datasetSelection"] == "Mnist":
+            self.dataset = Datasets.MnistDataset()
+        elif self.param_dict["datasetSelection"] == "Fashion Mnist":
+            self.dataset = Datasets.FashionMnistDataset()
 
     def initialPopulation(self):
-        self.network.createRandomModels(self.popSize)
+        for i in range(self.popSize):
+            n = Model(True, [], self.dataset)
+            self.individuals.append(n)
 
     def selection(self):
-        self.firstFittestModel = self.network.models[0]
-        self.secondFittestModel = self.network.models[1]
+        self.firstFittestModel = self.individuals[0]
+        self.secondFittestModel = self.individuals[1]
 
     def crossOver(self):
-        self.network.models.clear()
+        self.individuals.clear()
         newModels = [self.firstFittestModel, self.secondFittestModel]
 
         for i in range(int((self.popSize/2) - 1)):
@@ -25,25 +32,45 @@ class GeneticAlgorithm():
             firstLayers = []
             firstLayers.extend(self.secondFittestModel.layers[:crossPoint])
             firstLayers.extend(self.firstFittestModel.layers[crossPoint:])
-            newModels.append(NetworkModel(False, firstLayers))
+            newModels.append(Model(False, firstLayers, self.dataset))
 
             secondLayers = []
             secondLayers.extend(self.firstFittestModel.layers[:crossPoint])
             secondLayers.extend(self.secondFittestModel.layers[crossPoint:])
-            newModels.append(NetworkModel(False, secondLayers))
+            newModels.append(Model(False, secondLayers, self.dataset))
 
-        self.network.createModels(newModels)
+        self.individuals.extend(newModels)
     
     def mutation(self):
-        for model in self.network.models[2:]:
-            model.updateLayersRandomly()
+        for i in self.individuals[2:]:
+            i.updateLayersRandomly()
 
     def calculateFitness(self):
-        self.network.calculateResults()
-        self.network.models.sort(key=lambda i: i.fitness, reverse=True)
+        for i in self.individuals:
+            i.calculateResult()
+
+        self.individuals.sort(key=lambda i: i.val_accuracy, reverse=True)
         calculatedResults = []
-        calculatedResults.extend(self.network.models)
+        calculatedResults.extend(self.individuals)
         return calculatedResults
 
     def populationResult(self):
-        return self.network.models[0]
+        return self.individuals[0]
+    
+    def populationToString(self):
+        resultString = ""
+        for i in self.individuals:
+            resultString += "Accucracy:{} Val_Accuracy:{} Model:{}\n".format(
+                i.accuracy, 
+                i.val_accuracy, 
+                i.toString()
+            )
+        return resultString
+    
+    def populationResultToString(self, generationCount):
+        result = self.populationResult()
+        return "Generation: {}  Fittest Score: {} Fittest Model: {}".format(
+            generationCount, 
+            result.val_accuracy, 
+            result.toString()
+        )
