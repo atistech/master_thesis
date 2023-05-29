@@ -30,6 +30,12 @@ class Model():
                 )
             for i in range(4-layersCount):
                 self.layers.append(Layer("",""))
+            self.layers.append(
+                    Layer(
+                        self.dataset["output"]["output"],
+                        self.dataset["output"]["activation"]
+                    )
+                )
             self.toKeras()
         else:
             self.layers = layers
@@ -44,11 +50,7 @@ class Model():
                     activation=layer.activation
                 )(last)
         
-        self.output = Dense(
-            units=self.dataset["output"]["output"], 
-            activation=self.dataset["output"]["activation"]
-        )(last)
-        self.model = KerasModel(inputs=self.dataset["input"], outputs=self.output)
+        self.model = KerasModel(inputs=self.dataset["input"], outputs=last)
 
     def updateLayersRandomly(self):
         layersLength = len(self.layers)
@@ -81,6 +83,17 @@ class Model():
         self.val_loss = float("%.2f" % history.history['val_loss'][0])
         self.val_accuracy = float("%.2f" % (history.history['val_accuracy'][0]*100))
             
+    def serialize(self):
+        return {
+            'accuracy': self.accuracy,
+            'val_accuracy': self.val_accuracy,
+            'average_accuracy': float("%.2f" % ((self.accuracy+self.val_accuracy)/2)),
+            'loss': self.loss,
+            'val_loss': self.val_loss,
+            'optimizer': self.optimizer,
+            'architecture': self.toString()
+        }
+    
     def toString(self):
         toString = ""
         for layer in self.layers:
