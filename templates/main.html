@@ -12,7 +12,7 @@
 
 <body>
     <br>
-    <div class="container">
+    <div class="container" style="max-width: 600px;">
         <div class="row text-center">
             <div class="col">
                 <h2>Neural Network Model Search Engine</h2>
@@ -22,7 +22,7 @@
 
 
 
-        <div class="mb-3 row">
+        <div class="row">
             <label for="inputPassword" class="col-sm-2 col-form-label">Dataset Selection</label>
             <div class="col-sm-2">
                 <select class="form-select">
@@ -36,7 +36,7 @@
                 <input type="password" class="form-control" id="inputPassword">
             </div>
         </div>
-        <div class="mb-3 row">
+        <div class="row">
             <div class="col-auto">
                 <button id="search" type="submit" class="btn btn-primary mb-3">Search</button>
             </div>
@@ -61,24 +61,24 @@
 
         <div class="row">
             <div class="col">
-                <table class="table table-bordered text-center">
+                <table class="table table-bordered table-striped text-center">
                     <thead>
                         <tr>
                             <th scope="col" colspan="2"></th>
-                            <th scope="col" colspan="5" style="background-color: aqua;">Outputs</th>
-                            <th scope="col" colspan="2" style="background-color: greenyellow;">Inputs</th>
+                            <th scope="col" colspan="5" style="background-color:azure;">Outputs</th>
+                            <th scope="col" colspan="2" style="background-color:honeydew;">Inputs</th>
                             <th scope="col"></th>
                         </tr>
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Generation</th>
-                            <th scope="col" style="background-color: aqua;">Average_Accurracy</th>
-                            <th scope="col" style="background-color: aqua;">Accurracy</th>
-                            <th scope="col" style="background-color: aqua;">Val_Accuracy</th>
-                            <th scope="col" style="background-color: aqua;">Loss</th>
-                            <th scope="col" style="background-color: aqua;">Val_Loss</th>
-                            <th scope="col" style="background-color: greenyellow;">Optimizer</th>
-                            <th scope="col" style="background-color: greenyellow;">Model Architecture</th>
+                            <th scope="col" style="background-color: azure;">Average Accurracy</th>
+                            <th scope="col" style="background-color: azure;">Accurracy</th>
+                            <th scope="col" style="background-color: azure;">Validation Accuracy</th>
+                            <th scope="col" style="background-color: azure;">Loss</th>
+                            <th scope="col" style="background-color: azure;">Validation Loss</th>
+                            <th scope="col" style="background-color: honeydew;">Optimizer</th>
+                            <th scope="col" style="background-color: honeydew;">Model Architecture</th>
                             <th scope="col">Download</th>
                         </tr>
                     </thead>
@@ -113,6 +113,7 @@
         $("#search").on("click", function () {
             $("#search").attr('disabled', true);
             var counter = 1;
+            $("#deneme").empty();
             $.get("/ga-results", function (data) {
                 jQuery.each(data.data, function (index, value) {
                     $("#deneme").append(
@@ -131,8 +132,8 @@
                     );
                     counter++;
                 });
+                $("#search").attr('disabled', false);
             });
-            $("#search").attr('disabled', false);
         });
     </script>
 </body>
