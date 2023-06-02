@@ -3,9 +3,9 @@ from nn.Model import Model
 import nn.Datasets as Datasets
 
 class GeneticAlgorithm():
-    individuals = []
 
     def __init__(self, param_dict):
+        self.individuals = []
         self.param_dict = param_dict
         self.popSize = int(param_dict["populationSize"])
         if self.param_dict["datasetSelection"] == "Mnist":
