@@ -7,12 +7,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-    <title>Hello, world!</title>
+    <title>Neural Network Model Search Engine</title>
 </head>
 
 <body>
     <br>
-    <div class="container" style="max-width: 600px;">
+    <div class="container">
         <div class="row text-center">
             <div class="col">
                 <h2>Neural Network Model Search Engine</h2>
@@ -23,7 +23,7 @@
 
 
         <div class="row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Dataset Selection</label>
+            <label class="col-sm-2 col-form-label">Dataset Selection</label>
             <div class="col-sm-2">
                 <select class="form-select">
                     <option value="0" selected>Mnist</option>
@@ -31,13 +31,14 @@
                 </select>
             </div>
             <div class="col-sm-2"></div>
-            <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+            <label class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-4">
                 <input type="password" class="form-control" id="inputPassword">
             </div>
         </div>
         <div class="row">
             <div class="col-auto">
+                <input type="file" id="ctrl" webkitdirectory directory multiple />
                 <button id="search" type="submit" class="btn btn-primary mb-3">Search</button>
             </div>
         </div>
@@ -61,43 +62,48 @@
 
         <div class="row">
             <div class="col">
-                <table class="table table-bordered table-striped text-center">
-                    <thead>
-                        <tr>
-                            <th scope="col" colspan="2"></th>
-                            <th scope="col" colspan="5" style="background-color:azure;">Outputs</th>
-                            <th scope="col" colspan="2" style="background-color:honeydew;">Inputs</th>
-                            <th scope="col"></th>
-                        </tr>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Generation</th>
-                            <th scope="col" style="background-color: azure;">Average Accurracy</th>
-                            <th scope="col" style="background-color: azure;">Accurracy</th>
-                            <th scope="col" style="background-color: azure;">Validation Accuracy</th>
-                            <th scope="col" style="background-color: azure;">Loss</th>
-                            <th scope="col" style="background-color: azure;">Validation Loss</th>
-                            <th scope="col" style="background-color: honeydew;">Optimizer</th>
-                            <th scope="col" style="background-color: honeydew;">Model Architecture</th>
-                            <th scope="col">Download</th>
-                        </tr>
-                    </thead>
-                    <tbody id="deneme">
-                        <!--<tr>
-                            <th scope='row'>"+counter+"</th>
-                            <td>"+data.gen+"</td>
-                            <td>"+value.average_accuracy+"</td>
-                            <td>"+value.accuracy+"</td>
-                            <td>"+value.val_accuracy+"</td>
-                            <td>"+value.loss+"</td>
-                            <td>"+value.val_loss+"</td>
-                            <td>"+value.optimizer+"</td>
-                            <td>"+value.architecture+"</td>
-                            <td><button type="button" class="btn btn-outline-dark"><i
-                                        class="bi-download"></i></button></td>
-                        </tr>-->
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="caption-top table table-bordered table-striped text-center">
+                        <caption>Total of <span id="total">1</span> Models are listed.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2"></th>
+                                <th scope="col" colspan="5" style="background-color:azure;">Outputs</th>
+                                <th scope="col" colspan="2" style="background-color:honeydew;">Inputs</th>
+                                <th scope="col"></th>
+                            </tr>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Generation</th>
+                                <th scope="col" style="background-color: azure;">Average Accurracy</th>
+                                <th scope="col" style="background-color: azure;">Accurracy</th>
+                                <th scope="col" style="background-color: azure;">Validation Accuracy</th>
+                                <th scope="col" style="background-color: azure;">Loss</th>
+                                <th scope="col" style="background-color: azure;">Validation Loss</th>
+                                <th scope="col" style="background-color: honeydew;">Optimizer</th>
+                                <th scope="col" style="background-color: honeydew;">Model Architecture</th>
+                                <th scope="col">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results">
+                            <tr>
+                                <th scope='row'>1</th>
+                                <td>0</td>
+                                <td>90.06</td>
+                                <td>90.06</td>
+                                <td>90.06</td>
+                                <td>06.50</td>
+                                <td>06.45</td>
+                                <td>adam</td>
+                                <td>dense-softmax-16/dense-sigmoid-32/dense-sigmoid-2/dense-relu-16/dense-softmax-10/
+                                </td>
+                                <td><button type="button" class="btn btn-outline-dark"><i
+                                            class="bi-download"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -110,30 +116,45 @@
         integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
     <script>
+        function addValuesToTable(gen, data) {
+            jQuery.each(data.data, function (index, value) {
+                $("#results").append(
+                    "<tr>" +
+                    "<th scope='row'>" + (index+1) + "</th>" +
+                    "<td>" + data.gen + "</td>" +
+                    "<td>" + value.average_accuracy + "</td>" +
+                    "<td>" + value.accuracy + "</td>" +
+                    "<td>" + value.val_accuracy + "</td>" +
+                    "<td>" + value.loss + "</td>" +
+                    "<td>" + value.val_loss + "</td>" +
+                    "<td>" + value.optimizer + "</td>" +
+                    "<td>" + value.architecture + "</td>" +
+                    "<td><button type='button' class='btn btn-outline-dark'><i class='bi-download'></i></button></td>" +
+                    "</tr>"
+                );
+            });
+            $("#total").text(data.data.length);
+        }
+
         $("#search").on("click", function () {
             $("#search").attr('disabled', true);
-            var counter = 1;
-            $("#deneme").empty();
-            $.get("/ga-results", function (data) {
-                jQuery.each(data.data, function (index, value) {
-                    $("#deneme").append(
-                        "<tr>" +
-                        "<th scope='row'>" + counter + "</th>" +
-                        "<td>" + data.gen + "</td>" +
-                        "<td>" + value.average_accuracy + "</td>" +
-                        "<td>" + value.accuracy + "</td>" +
-                        "<td>" + value.val_accuracy + "</td>" +
-                        "<td>" + value.loss + "</td>" +
-                        "<td>" + value.val_loss + "</td>" +
-                        "<td>" + value.optimizer + "</td>" +
-                        "<td>" + value.architecture + "</td>" +
-                        "<td><button type='button' class='btn btn-outline-dark'><i class='bi-download'></i></button></td>" +
-                        "</tr>"
-                    );
-                    counter++;
-                });
-                $("#search").attr('disabled', false);
+
+            var generationCount = 0;
+            $("#results").empty();
+            $.get("/ga-results/" + generationCount, function (data) {
+                addValuesToTable(generationCount, data);
+
+                while (generationCount < 1) {
+                    generationCount += 1;
+                    $.get("/ga-calback/" + generationCount, function (data) {
+                        addValuesToTable(generationCount, data);
+                        
+                        $("#search").attr('disabled', false);
+                    });
+                }
             });
+
+
         });
     </script>
 </body>
