@@ -1,20 +1,20 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 from keras.layers import Dense
 from keras.models import Model as KerasModel
 import nn.Params as Params
 import random
+from keras import metrics
 
 class Layer():
     def __init__(self, units, activation):
         self.units = units
         self.activation = activation
 
-class Model():
+class Model(object):
     optimizer = "adam"
-    lossFunction = "categorical_crossentropy"
     epochs = 5
     batchSize = 600
-
-    loss, accuracy, val_loss, val_accuracy = "", "", "", ""
     
     def __init__(self, isRandom, layers, dataset):
         self.dataset = dataset
@@ -62,37 +62,6 @@ class Model():
                     "activation": random_activation,
                     "output": random_output
                 }
-            
-    def calculateResult(self):
-        self.model.compile(
-            optimizer=self.optimizer,
-            loss=self.lossFunction, 
-            metrics=["accuracy"]
-        )
-
-        history = self.model.fit(
-            self.dataset["train_x"], self.dataset["train_y"],
-            validation_data=(self.dataset["test_x"], self.dataset["test_y"]),
-            epochs=self.epochs, 
-            batch_size=self.batchSize, 
-            verbose=0
-        )
-
-        self.loss = float("%.2f" % history.history['loss'][0])
-        self.accuracy = float("%.2f" % (history.history['accuracy'][0]*100))
-        self.val_loss = float("%.2f" % history.history['val_loss'][0])
-        self.val_accuracy = float("%.2f" % (history.history['val_accuracy'][0]*100))
-            
-    def serialize(self):
-        return {
-            'accuracy': self.accuracy,
-            'val_accuracy': self.val_accuracy,
-            'average_accuracy': float("%.2f" % ((self.accuracy+self.val_accuracy)/2)),
-            'loss': self.loss,
-            'val_loss': self.val_loss,
-            'optimizer': self.optimizer,
-            'architecture': self.toString()
-        }
     
     def toString(self):
         toString = ""
@@ -101,6 +70,7 @@ class Model():
                 toString += "dense-{}-{}/".format(layer.activation, layer.units)
         return toString
     
+    """
     def toPythonCode(self):
         stringModel = "from keras import Sequential\n"
         stringModel += "from keras.layers import Input, Dense\n\n"
@@ -122,3 +92,4 @@ class Model():
         file.close()
 
         return stringModel
+    """

@@ -1,4 +1,8 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
+import os, sys
+
+parent = os.path.abspath('.')
+sys.path.insert(1, parent)
 from GeneticAlgorithm import GeneticAlgorithm
 
 app = Flask(__name__)
@@ -9,25 +13,22 @@ ga = object
 def index():
     return render_template("main.html")
 
-@app.route("/ga-results/<gen>")
-def ga_results(gen):
+@app.route("/ga-results/<option>")
+def ga_results(option):
     global ga
     ga = GeneticAlgorithm(param_dict={
-        "datasetSelection": "Mnist",
-        "populationSize": 2
+        "dataset": request.files.get('dataset'),
+        "populationSize": 2,
+        "IsRegression": True if (option == "true") else False
     })
 
-    ga.initialPopulation()
-    results = ga.calculateFitness()
+    results = ga.initialPopulation()
     return jsonify(data=[r.serialize() for r in results])
 
-@app.route("/ga-calback/<gen>")
-def ga_callback(gen):
+@app.route("/ga-calback")
+def ga_callback():
     global ga
-    ga.selection()
-    ga.crossOver()
-    ga.mutation()
-    results = ga.calculateFitness()
+    results = ga.callback()
     return jsonify(data=[r.serialize() for r in results])
 
 if __name__ == "__main__":

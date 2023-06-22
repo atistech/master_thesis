@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="regression" role="tabpanel" aria-labelledby="regression-tab">
+        <form id="upload-file" method="get" enctype="multipart/form-data">
+            <div class="row">
+                <label class="col-auto col-form-label">Dataset Selection</label>
+                <div class="col-auto">
+                    <input type="file" name="dataset" id="dataset" accept=".csv" />
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-auto">
+                    <button id="search" type="submit" class="btn btn-primary">Regression Search</button>
+                </div>
+            </div>
+        </form>
+        <br><br><br><br>
+        <div class="row">
+            <div class="col">
+                <div class="table-responsive">
+                    <table class="caption-top table table-bordered table-striped text-center">
+                        <caption>Total of <span id="total">1</span> Models are listed.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2"></th>
+                                <th scope="col" colspan="7" style="background-color:azure;">Outputs</th>
+                                <th scope="col" colspan="2" style="background-color:honeydew;">Inputs
+                                </th>
+                                <th scope="col"></th>
+                            </tr>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Generation</th>
+                                <th scope="col" style="background-color: azure;">Fitness Score</th>
+                                <th scope="col" style="background-color: azure;">Loss</th>
+                                <th scope="col" style="background-color: azure;">Validation Loss
+                                </th>
+                                <th scope="col" style="background-color: azure;">MAPE</th>
+                                <th scope="col" style="background-color: azure;">Validation MAPE</th>
+                                <th scope="col" style="background-color: azure;">MSE</th>
+                                <th scope="col" style="background-color: azure;">Validation MSE</th>
+                                <th scope="col" style="background-color: honeydew;">Optimizer</th>
+                                <th scope="col" style="background-color: honeydew;">Model Architecture
+                                </th>
+                                <th scope="col">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results">
+                            <tr>
+                                <th scope='row'>1</th>
+                                <td>0</td>
+                                <td>90.06</td>
+                                <td>90.06</td>
+                                <td>90.06</td>
+                                <td>90.06</td>
+                                <td>06.50</td>
+                                <td>06.45</td>
+                                <td>06.45</td>
+                                <td>adam</td>
+                                <td>dense-softmax-16<br>dense-sigmoid-32<br>dense-sigmoid-2<br>dense-softmax-10
+                                </td>
+                                <td><button type="button" class="btn btn-outline-dark"><i
+                                            class="bi-download"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="classification" role="tabpanel" aria-labelledby="classification-tab">
+        <div class="row">
+            <label class="col-auto col-form-label">Dataset Selection</label>
+            <div class="col-auto">
+                <select class="form-select">
+                    <option value="0" selected>Mnist</option>
+                    <option value="1">Fashion Mnist</option>
+                </select>
+            </div>
+            <label class="col-auto col-form-label">Password</label>
+            <div class="col-auto">
+                <input type="password" class="form-control" id="inputPassword">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-auto">
+                <button id="search2" type="submit" class="btn btn-primary">Classification Search</button>
+            </div>
+        </div>
+        <br><br><br><br>
+        <div class="row">
+            <div class="col">
+                <div class="table-responsive">
+                    <table class="caption-top table table-bordered table-striped text-center">
+                        <caption>Total of <span id="total2">1</span> Models are listed.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2"></th>
+                                <th scope="col" colspan="5" style="background-color:azure;">Outputs</th>
+                                <th scope="col" colspan="2" style="background-color:honeydew;">Inputs
+                                </th>
+                                <th scope="col"></th>
+                            </tr>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Generation</th>
+                                <th scope="col" style="background-color: azure;">Average Accurracy</th>
+                                <th scope="col" style="background-color: azure;">Training Accurracy</th>
+                                <th scope="col" style="background-color: azure;">Validation Accuracy
+                                </th>
+                                <th scope="col" style="background-color: azure;">Training Loss</th>
+                                <th scope="col" style="background-color: azure;">Validation Loss</th>
+                                <th scope="col" style="background-color: honeydew;">Optimizer</th>
+                                <th scope="col" style="background-color: honeydew;">Model Architecture
+                                </th>
+                                <th scope="col">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results2">
+                            <tr>
+                                <th scope='row'>1</th>
+                                <td>0</td>
+                                <td>90.06</td>
+                                <td>90.06</td>
+                                <td>90.06</td>
+                                <td>06.50</td>
+                                <td>06.45</td>
+                                <td>adam</td>
+                                <td>dense-softmax-16/dense-sigmoid-32/dense-sigmoid-2/dense-relu-16/dense-softmax-10/
+                                </td>
+                                <td><button type="button" class="btn btn-outline-dark"><i
+                                            class="bi-download"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

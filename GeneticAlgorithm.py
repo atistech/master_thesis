@@ -1,6 +1,9 @@
 import random
+from nn.ClassificationModel import ClassificationModel
 from nn.Model import Model
 import nn.Datasets as Datasets
+import os
+from nn.RegressionModel import RegressionModel
 
 class GeneticAlgorithm():
 
@@ -8,21 +11,36 @@ class GeneticAlgorithm():
         self.individuals = []
         self.param_dict = param_dict
         self.popSize = int(param_dict["populationSize"])
-        if self.param_dict["datasetSelection"] == "Mnist":
+
+        if(self.param_dict["IsRegression"]):
+            #self.dataset = Datasets.readCSVDataset(os.getcwd()+"/nn/sample_dataset1.csv")
+            self.dataset = Datasets.readCSVDataset(param_dict["dataset"])
+        else:
             self.dataset = Datasets.MnistDataset()
-        elif self.param_dict["datasetSelection"] == "Fashion Mnist":
-            self.dataset = Datasets.FashionMnistDataset()
+            #self.dataset = Datasets.FashionMnistDataset()
 
     def initialPopulation(self):
         for i in range(self.popSize):
-            n = Model(True, [], self.dataset)
-            self.individuals.append(n)
+            if(self.param_dict["IsRegression"]):
+                n = RegressionModel(True, [], self.dataset)
+                self.individuals.append(n)
+            else:
+                n = ClassificationModel(True, [], self.dataset)
+                self.individuals.append(n)
+        return self.__calculateFitness()
+        
 
-    def selection(self):
+    def callback(self):
+        self.__selection()
+        self.__crossOver()
+        self.__mutation()
+        return self.__calculateFitness()
+
+    def __selection(self):
         self.firstFittestModel = self.individuals[0]
         self.secondFittestModel = self.individuals[1]
 
-    def crossOver(self):
+    def __crossOver(self):
         self.individuals.clear()
         newModels = [self.firstFittestModel, self.secondFittestModel]
 
@@ -41,36 +59,13 @@ class GeneticAlgorithm():
 
         self.individuals.extend(newModels)
     
-    def mutation(self):
+    def __mutation(self):
         for i in self.individuals[2:]:
             i.updateLayersRandomly()
 
-    def calculateFitness(self):
+    def __calculateFitness(self):
         for i in self.individuals:
             i.calculateResult()
 
-        self.individuals.sort(key=lambda i: i.val_accuracy, reverse=True)
-        calculatedResults = []
-        calculatedResults.extend(self.individuals)
-        return calculatedResults
-
-    def populationResult(self):
-        return self.individuals[0]
-    
-    def populationToString(self):
-        resultString = ""
-        for i in self.individuals:
-            resultString += "Accucracy:{} Val_Accuracy:{} Model:{}\n".format(
-                i.accuracy, 
-                i.val_accuracy, 
-                i.toString()
-            )
-        return resultString
-    
-    def populationResultToString(self, generationCount):
-        result = self.populationResult()
-        return "Generation: {}  Fittest Score: {} Fittest Model: {}".format(
-            generationCount, 
-            result.val_accuracy, 
-            result.toString()
-        )
+        self.individuals.sort(key=lambda i: i.fitnessScore, reverse=True)
+        return self.individuals
