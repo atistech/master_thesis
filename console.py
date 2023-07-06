@@ -1,9 +1,10 @@
 from GeneticAlgorithm import GeneticAlgorithm
+import os
 
 generationCount = 0
 params_dict = {
-    "datasetSelection": "Num",
-    "populationSize": 2,
+    "dataset": os.getcwd()+"/nn/consolidation_dataset.csv",
+    "populationSize": 10,
     "IsRegression": True
 }
 ga = GeneticAlgorithm(param_dict=params_dict)
@@ -11,12 +12,14 @@ ga = GeneticAlgorithm(param_dict=params_dict)
 results = ga.initialPopulation()
 
 print("Generation: "+str(generationCount))
-print([r.serialize() for r in results]) 
+for r in results:
+    print(r.serialize())
 
-while generationCount < 2:
+while generationCount < 10:
     results = ga.callback()
     print("Generation: "+str(generationCount))
-    print([r.serialize() for r in results])   
+    for r in results:
+        print(r.serialize()) 
     generationCount += 1
 
 print("Solution found.")

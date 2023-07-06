@@ -1,34 +1,25 @@
 import random
 from nn.ClassificationModel import ClassificationModel
-from nn.Model import Model
-import nn.Datasets as Datasets
-import os
 from nn.RegressionModel import RegressionModel
+from nn.Model import Model
 
 class GeneticAlgorithm():
 
     def __init__(self, param_dict):
         self.individuals = []
-        self.param_dict = param_dict
+        self.isRegression = param_dict["IsRegression"]
         self.popSize = int(param_dict["populationSize"])
-
-        if(self.param_dict["IsRegression"]):
-            #self.dataset = Datasets.readCSVDataset(os.getcwd()+"/nn/sample_dataset1.csv")
-            self.dataset = Datasets.readCSVDataset(param_dict["dataset"])
-        else:
-            self.dataset = Datasets.MnistDataset()
-            #self.dataset = Datasets.FashionMnistDataset()
+        self.dataset = param_dict["dataset"]
 
     def initialPopulation(self):
         for i in range(self.popSize):
-            if(self.param_dict["IsRegression"]):
+            if(self.isRegression):
                 n = RegressionModel(True, [], self.dataset)
                 self.individuals.append(n)
             else:
                 n = ClassificationModel(True, [], self.dataset)
                 self.individuals.append(n)
         return self.__calculateFitness()
-        
 
     def callback(self):
         self.__selection()

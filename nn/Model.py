@@ -4,7 +4,6 @@ from keras.layers import Dense
 from keras.models import Model as KerasModel
 import nn.Params as Params
 import random
-from keras import metrics
 
 class Layer():
     def __init__(self, units, activation):

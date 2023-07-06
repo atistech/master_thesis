@@ -1,8 +1,10 @@
 from nn.Model import Model
+import nn.Datasets as Datasets
 
 class ClassificationModel(Model):
 
     def __init__(self, isRandom, layers, dataset):
+        self.dataset = Datasets.MnistDataset()
         super().__init__(isRandom, layers, dataset)
 
     def calculateResult(self):
