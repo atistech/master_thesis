@@ -1,6 +1,6 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-from keras.layers import Dense
+from keras.layers import Dense, Input
 from keras.models import Model as KerasModel
 import nn.Params as Params
 import random
@@ -11,28 +11,24 @@ class Layer():
         self.activation = activation
 
 class Model(object):
-    optimizer = "adam"
-    epochs = 5
-    batchSize = 600
     
-    def __init__(self, isRandom, layers, dataset):
-        self.dataset = dataset
+    def __init__(self, isRandom, layers):
         if isRandom:
             self.layers = []
             layersCount = random.choice(Params.layerNums)
             for i in range(layersCount):
                 self.layers.append(
                     Layer(
-                        random.choice(Params.layerOutputs),
-                        random.choice(Params.layerActivations)
+                        units=random.choice(Params.layerOutputs),
+                        activation=random.choice(Params.layerActivations)
                     )
                 )
             for i in range(4-layersCount):
                 self.layers.append(Layer("",""))
             self.layers.append(
                     Layer(
-                        self.dataset["output"]["output"],
-                        self.dataset["output"]["activation"]
+                        units=1,
+                        activation="sigmoid"
                     )
                 )
             self.toKeras()
@@ -41,15 +37,15 @@ class Model(object):
             self.toKeras()
 
     def toKeras(self):
-        last = self.dataset["input"]
+        input = Input(shape=(3, ))
+        last = input
         for layer in self.layers:
             if layer.activation != "":
                 last = Dense(
                     units=layer.units, 
                     activation=layer.activation
                 )(last)
-        
-        self.model = KerasModel(inputs=self.dataset["input"], outputs=last)
+        self.model = KerasModel(inputs=input, outputs=last)
 
     def updateLayersRandomly(self):
         layersLength = len(self.layers)
@@ -67,6 +63,8 @@ class Model(object):
         for layer in self.layers:
             if layer.activation != "":
                 toString += "dense-{}-{}/".format(layer.activation, layer.units)
+            else:
+                toString += "empty_layer/"
         return toString
     
     """

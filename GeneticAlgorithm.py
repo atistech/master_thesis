@@ -2,23 +2,19 @@ import random
 from nn.ClassificationModel import ClassificationModel
 from nn.RegressionModel import RegressionModel
 from nn.Model import Model
+from nn.ModelController import ModelController
 
 class GeneticAlgorithm():
-
+    individuals = []
+    
     def __init__(self, param_dict):
-        self.individuals = []
+        self.dataset = param_dict["dataset"]
         self.isRegression = param_dict["IsRegression"]
         self.popSize = int(param_dict["populationSize"])
-        self.dataset = param_dict["dataset"]
+        self.controller = ModelController(self.dataset, self.isRegression)
 
     def initialPopulation(self):
-        for i in range(self.popSize):
-            if(self.isRegression):
-                n = RegressionModel(True, [], self.dataset)
-                self.individuals.append(n)
-            else:
-                n = ClassificationModel(True, [], self.dataset)
-                self.individuals.append(n)
+        self.individuals = self.controller.createInitialModels(self.popSize)
         return self.__calculateFitness()
 
     def callback(self):
@@ -55,8 +51,4 @@ class GeneticAlgorithm():
             i.updateLayersRandomly()
 
     def __calculateFitness(self):
-        for i in self.individuals:
-            i.calculateResult()
-
-        self.individuals.sort(key=lambda i: i.fitnessScore, reverse=True)
-        return self.individuals
+        return self.controller.calculateModelResults()

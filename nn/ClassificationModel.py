@@ -3,13 +3,12 @@ import nn.Datasets as Datasets
 
 class ClassificationModel(Model):
 
-    def __init__(self, isRandom, layers, dataset):
-        self.dataset = Datasets.MnistDataset()
-        super().__init__(isRandom, layers, dataset)
+    def __init__(self, isRandom, layers):
+        super().__init__(isRandom, layers)
 
     def calculateResult(self):
         self.model.compile(
-            optimizer=self.optimizer,
+            optimizer="adam",
             loss="categorical_crossentropy", 
             metrics=["accuracy"]
         )
@@ -17,8 +16,8 @@ class ClassificationModel(Model):
         history = self.model.fit(
             self.dataset["x"], self.dataset["y"],
             validation_split=0.2,
-            epochs=self.epochs, 
-            batch_size=self.batchSize, 
+            epochs=5, 
+            batch_size=600, 
             verbose=0
         )
 

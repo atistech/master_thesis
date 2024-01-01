@@ -4,6 +4,7 @@ from tkinter import messagebox
 import nn.Params as params
 from GeneticAlgorithm import GeneticAlgorithm
 import threading
+import os
 
 def combobox(root, text_variable, values, row, column):
     combobox = ttk.Combobox(root, textvariable=text_variable, values=values, state="readonly")
@@ -22,13 +23,9 @@ def startSearchThreading():
 
 def startSearch():
     param = {
-        "datasetSelection": datasetSelection_value.get(),
-        "trainTestSplit": trainTestSplit_value.get(),
-        "lossFunction": lossFunction_value.get(),
-        "optimizer": optimizer_value.get(),
-        "epochs": epoch_value.get(),
-        "batchSize": batchSize_value.get(),
-        "populationSize": populationSize_value.get()
+        "dataset": os.getcwd()+"/nn/consolidation_dataset.csv",
+        "populationSize": populationSize_value.get(),
+        "IsRegression": True
     }
     answer = messagebox.askokcancel(message=param)
 
@@ -92,26 +89,6 @@ outputLayer_value = tk.StringVar()
 outputLayer_value.set("Dense Softmax 10")
 ttk.Label(dataset_frame, text="Output Layer:").grid(row=2, column=3, padx=5, pady=10)
 ttk.Entry(dataset_frame, textvariable=outputLayer_value, state="readonly").grid(row=2, column=4, padx=5, pady=10)
-
-### Neural Network Model Hyperparameters Frame ###
-model_frame = tk.LabelFrame(parameters_frame, text="Neural Network Model Hyperparameters")
-model_frame.pack(fill='x')
-lossFunction_value = tk.StringVar()
-ttk.Label(model_frame, text="Loss Function:").grid(row=1, column=0, padx=5, pady=10)
-combobox(model_frame, lossFunction_value, params.ModelLossFunctions, 1, 1)
-ttk.Label(model_frame).grid(row=1, column=2, padx=20, pady=10)
-optimizer_value = tk.StringVar()
-ttk.Label(model_frame, text="Optimizer Algorithm:").grid(row=1, column=3, padx=5, pady=10)
-combobox(model_frame, optimizer_value, params.ModelOptimizers, 1, 4)
-epoch_value= tk.StringVar()
-epoch_value.set("5")
-ttk.Label(model_frame, text="Epoch:").grid(row=2, column=0, padx=5, pady=10)
-ttk.Entry(model_frame, textvariable=epoch_value, state="readonly").grid(row=2, column=1, padx=5, pady=10)
-ttk.Label(model_frame).grid(row=2, column=2, padx=20, pady=10)
-batchSize_value = tk.StringVar()
-batchSize_value.set("600")
-ttk.Label(model_frame, text="Batch Size:").grid(row=2, column=3, padx=5, pady=10)
-ttk.Entry(model_frame, textvariable=batchSize_value, state="readonly").grid(row=2, column=4, padx=5, pady=10)
 
 ### Genetic Algorithm Parameters Frame ###
 ga_frame = tk.LabelFrame(parameters_frame, text="Genetic Algorithm Parameters")

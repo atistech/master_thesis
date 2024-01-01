@@ -1,19 +1,35 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-import enum
 from keras.models import Model
 from keras.layers import Dense
-import nn.Datasets as Datasets
-from nn.NetworkModel import NetworkModel
+from nn.ClassificationModel import ClassificationModel
+from nn.RegressionModel import RegressionModel
+from nn.Datasets import readCSVDataset
 
-class Network:
+class ModelController:
     models = []
 
-    def __init__(self, datasetSelection):
-        if datasetSelection == 0:
-            self.dataset = Datasets.MnistDataset()
+    def __init__(self, dataset, isRegression):
+        self.dataset = readCSVDataset(dataset)
+        self.isRegression = isRegression
+    
+    def createInitialModels(self, maxCount):
+        for i in range(maxCount):
+            if(self.isRegression):
+                n = RegressionModel(True, [])
+            else:
+                n = ClassificationModel(True, [])
+            self.models.append(n)
 
+    def calculateModelResults(self):
+        for model in self.models:
+            model.calculateResult(self.dataset)
+        self.models.sort(key=lambda i: i.fitnessScore, reverse=True)
+        return self.models
+
+
+"""
     def __modelToKeras(self, model):
         last = self.dataset["input"]
         for layer in model.layers:
@@ -21,10 +37,6 @@ class Network:
                 last = Dense(units=layer["output"], activation=layer["activation"])(last)
         model.output = Dense(units=10, activation="softmax")(last)
         return model
-
-    def createRandomModels(self, howManyPiece):
-        for i in range(howManyPiece):
-            self.models.append(self.__modelToKeras(NetworkModel()))
 
     def createModels(self, models):
         for model in models:
@@ -48,3 +60,4 @@ class Network:
             if h.startswith("val") and h.endswith("accuracy"):
                 self.models[index].fitness = history.history[h][-1]*100
                 index += 1
+"""

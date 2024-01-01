@@ -3,14 +3,12 @@ from keras import metrics
 import nn.Datasets as Datasets
 
 class RegressionModel(Model):
-    def __init__(self, isRandom, layers, dataset):
-        #self.dataset = Datasets.readCSVDataset(os.getcwd()+"/nn/sample_dataset1.csv")
-        self.dataset = Datasets.readCSVDataset(dataset)
-        super().__init__(isRandom, layers, self.dataset)
+    def __init__(self, isRandom, layers):
+        super().__init__(isRandom, layers)
 
-    def calculateResult(self):
+    def calculateResult(self, dataset):
         self.model.compile(
-            optimizer=self.optimizer,
+            optimizer="adam",
             loss="binary_crossentropy",
             metrics=[metrics.MeanAbsolutePercentageError(), 
                      metrics.MeanSquaredError(),
@@ -18,10 +16,10 @@ class RegressionModel(Model):
         )
 
         history = self.model.fit(
-            self.dataset["x"], self.dataset["y"],
+            dataset["x"], dataset["y"],
             validation_split=0.2,
-            epochs=self.epochs, 
-            batch_size=self.batchSize, 
+            epochs=5, 
+            batch_size=600,
             verbose=0
         )
 
@@ -47,7 +45,7 @@ class RegressionModel(Model):
             'loss': self.loss,
             'val_loss': self.val_loss,
             'fitnessScore': self.fitnessScore,
-            'optimizer': self.optimizer,
+            'optimizer': "adam",
             'architecture': super().toString()
         }
     
