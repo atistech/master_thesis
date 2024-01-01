@@ -4,6 +4,8 @@ from tkinter import messagebox
 import nn.Params as params
 from GeneticAlgorithm import GeneticAlgorithm
 import threading
+from tkinter import filedialog as fd
+from tkinter.messagebox import showinfo
 import os
 
 def combobox(root, text_variable, values, row, column):
@@ -23,7 +25,7 @@ def startSearchThreading():
 
 def startSearch():
     param = {
-        "dataset": os.getcwd()+"/nn/consolidation_dataset.csv",
+        "dataset": datasetSelection_value.get(),
         "populationSize": populationSize_value.get(),
         "IsRegression": True
     }
@@ -36,9 +38,9 @@ def startSearch():
         
         generationCount = 0
         algorithm = GeneticAlgorithm(param_dict=param)
-        algorithm.initialPopulation()
-        fitnessResults = algorithm.calculateFitness()
-        populationResult = algorithm.populationResult()
+        fitnessResults = algorithm.initialPopulation()
+        populationResult = algorithm.initialPopulation()
+        #populationResult = algorithm.populationResult()
         addResultsToTreeview(generationCount, fitnessResults, populationResult)
         
         while generationCount < int(maxGenerationCount_value.get()):
@@ -75,8 +77,25 @@ problemType_value = tk.StringVar()
 ttk.Label(dataset_frame, text="Problem Type:").grid(row=0, column=0, padx=20, pady=10)
 combobox(dataset_frame, problemType_value, ("Multiclass Classification", "Binary Classification"), 0, 1)
 datasetSelection_value = tk.StringVar()
+datasetSelection_value_str = ""
 ttk.Label(dataset_frame, text="Dataset Selection:").grid(row=1, column=0, padx=20, pady=10)
-combobox(dataset_frame, datasetSelection_value, ("Mnist", "Fashion Mnist"), 1, 1)
+#combobox(dataset_frame, datasetSelection_value, ("Mnist", "Fashion Mnist"), 1, 1)
+def select_file():
+    filetypes = (
+        ('CSV files', '*.csv'),
+        ('All files', '*.*')
+    )
+    filename = fd.askopenfilename(
+        title='Open a file',
+        initialdir='/',
+        filetypes=filetypes)
+    datasetSelection_value.set(filename)
+    showinfo(
+        title='Selected File',
+        message=filename
+    )
+# open button
+ttk.Button(dataset_frame, text='Open a File', command=select_file).grid(row=1, column=1, padx=20, pady=10)
 trainTestSplit_value = tk.StringVar()
 ttk.Label(dataset_frame, text="Train-Test Split Ratio:").grid(row=1, column=3, padx=20, pady=10)
 combobox(dataset_frame, trainTestSplit_value, (0.2, 0.33), 1, 4)
