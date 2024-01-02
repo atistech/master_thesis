@@ -15,7 +15,6 @@ results = ga.initialPopulation()
 print("Generation: "+str(generationCount))
 for r in results:
     print(r.serialize())
-"""
 while generationCount < 10:
     results = ga.callback()
     print("Generation: "+str(generationCount))
@@ -24,4 +23,4 @@ while generationCount < 10:
     generationCount += 1
 
 print("Solution found.")
-print(ga.individuals[0].serialize())"""
+print(ga.individuals[0].serialize())

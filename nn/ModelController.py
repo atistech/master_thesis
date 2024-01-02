@@ -28,6 +28,8 @@ class ModelController:
         self.models.sort(key=lambda i: i.fitnessScore, reverse=True)
         return self.models
 
+    def getBestModels(self):
+        return self.models[0], self.models[1]
 
 """
     def __modelToKeras(self, model):

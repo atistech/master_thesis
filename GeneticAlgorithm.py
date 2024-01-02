@@ -1,11 +1,8 @@
 import random
-from nn.ClassificationModel import ClassificationModel
-from nn.RegressionModel import RegressionModel
 from nn.Model import Model
 from nn.ModelController import ModelController
 
 class GeneticAlgorithm():
-    individuals = []
     
     def __init__(self, param_dict):
         self.dataset = param_dict["dataset"]
@@ -14,7 +11,7 @@ class GeneticAlgorithm():
         self.controller = ModelController(self.dataset, self.isRegression)
 
     def initialPopulation(self):
-        self.individuals = self.controller.createInitialModels(self.popSize)
+        self.controller.createInitialModels(self.popSize)
         return self.__calculateFitness()
 
     def callback(self):
@@ -24,8 +21,7 @@ class GeneticAlgorithm():
         return self.__calculateFitness()
 
     def __selection(self):
-        self.firstFittestModel = self.individuals[0]
-        self.secondFittestModel = self.individuals[1]
+        self.firstFittestModel, self.secondFittestModel = self.controller.getBestModels()
 
     def __crossOver(self):
         self.individuals.clear()
