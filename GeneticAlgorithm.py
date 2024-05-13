@@ -1,50 +1,84 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import random
 from nn.Model import Model
-from nn.ModelController import ModelController
+from nn.Datasets import readCSVDataset
 
 class GeneticAlgorithm():
+    models =  []
     
     def __init__(self, param_dict):
-        self.dataset = param_dict["dataset"]
+        self.dataset = readCSVDataset(param_dict["dataset"])
         self.isRegression = param_dict["IsRegression"]
         self.popSize = int(param_dict["populationSize"])
-        self.controller = ModelController(self.dataset, self.isRegression)
 
     def initialPopulation(self):
-        self.controller.createInitialModels(self.popSize)
-        return self.__calculateFitness()
+        # creating new models
+        for i in range(self.popSize):
+            self.models.append(Model(True, [], self.isRegression))
+        
+        # return new models with results
+        for model in self.models:
+            model.calculateResult(self.dataset)
+        self.models.sort(key=lambda i: i.fitnessScore, reverse=True)
+        return self.models
 
     def callback(self):
-        self.__selection()
-        self.__crossOver()
-        self.__mutation()
-        return self.__calculateFitness()
+        # selection best two models
+        self.firstFittestModel = self.models[0]
+        self.secondFittestModel = self.models[1]
+        
+        # crossover
+        self.models.clear()
+        self.models = [self.firstFittestModel, self.secondFittestModel]
 
-    def __selection(self):
-        self.firstFittestModel, self.secondFittestModel = self.controller.getBestModels()
+        layersPool = []
+        layersPool.extend(self.firstFittestModel.layers)
+        layersPool.extend(self.secondFittestModel.layers)
 
-    def __crossOver(self):
-        self.individuals.clear()
-        newModels = [self.firstFittestModel, self.secondFittestModel]
+        for i in range(len(self.models)):
+            random.shuffle(layersPool)
+            amount = random.randint(1,3)
+            newLayers = []
+            for i in range(amount):
+                newLayers.append(random.choice(layersPool))
+            self.models.append(Model(False, newLayers))
+        
+        # mutation
+        for model in self.models[2:]:
+            model.updateLayersRandomly()
+        
+        # return models with results
+        for model in self.models:
+            model.calculateResult(self.dataset)
+        self.models.sort(key=lambda i: i.fitnessScore, reverse=True)
+        return self.models
 
-        for i in range(int((self.popSize/2) - 1)):
-            crossPoint = random.randint(1,3)
-            
-            firstLayers = []
-            firstLayers.extend(self.secondFittestModel.layers[:crossPoint])
-            firstLayers.extend(self.firstFittestModel.layers[crossPoint:])
-            newModels.append(Model(False, firstLayers, self.dataset))
+"""
+    def __modelToKeras(self, model):
+        last = self.dataset["input"]
+        for layer in model.layers:
+            if layer["activation"] != "":
+                last = Dense(units=layer["output"], activation=layer["activation"])(last)
+        model.output = Dense(units=10, activation="softmax")(last)
+        return model
 
-            secondLayers = []
-            secondLayers.extend(self.firstFittestModel.layers[:crossPoint])
-            secondLayers.extend(self.secondFittestModel.layers[crossPoint:])
-            newModels.append(Model(False, secondLayers, self.dataset))
+    def calculateResults(self):
+        outputs = [i.output for i in self.models]
+        model = Model(self.dataset["input"], outputs)
 
-        self.individuals.extend(newModels)
-    
-    def __mutation(self):
-        for i in self.individuals[2:]:
-            i.updateLayersRandomly()
+        model.compile(optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=["accuracy"]
+        )
 
-    def __calculateFitness(self):
-        return self.controller.calculateModelResults()
+        history = model.fit(self.dataset["train_x"], self.dataset["train_y"],
+            validation_data=(self.dataset["test_x"], self.dataset["test_y"]),
+            epochs=5, batch_size=600, verbose=0)
+
+        index = 0
+        for h in history.history:
+            if h.startswith("val") and h.endswith("accuracy"):
+                self.models[index].fitness = history.history[h][-1]*100
+                index += 1
+"""

@@ -1,40 +1,28 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 from keras.layers import Dense, Input
+from keras import metrics
 from keras.models import Model as KerasModel
 import nn.Params as Params
+from nn.Layer import Layer
 import random
-
-class Layer():
-    def __init__(self, units, activation):
-        self.units = units
-        self.activation = activation
 
 class Model(object):
     
-    def __init__(self, isRandom, layers):
+    def __init__(self, isRandom, layers, isRegression):
         if isRandom:
             self.layers = []
-            layersCount = random.choice(Params.layerNums)
+            layersCount = Params.randomLayerNums()
             for i in range(layersCount):
-                self.layers.append(
-                    Layer(
-                        units=random.choice(Params.layerOutputs),
-                        activation=random.choice(Params.layerActivations)
-                    )
-                )
+                self.layers.append(Layer())
             for i in range(4-layersCount):
                 self.layers.append(Layer("",""))
-            self.layers.append(
-                    Layer(
-                        units=1,
-                        activation="sigmoid"
-                    )
-                )
+            self.layers.append(Layer(units=1, activation="sigmoid"))
             self.toKeras()
         else:
             self.layers = layers
             self.toKeras()
+        self.isRegression = isRegression
 
     def toKeras(self):
         input = Input(shape=(3, ))
@@ -90,3 +78,80 @@ class Model(object):
 
         return stringModel
     """
+
+    def calculateResult(self, dataset):
+        if(self.isRegression):
+            self.model.compile(
+                optimizer="adam",
+                loss="binary_crossentropy",
+                metrics=[
+                    metrics.MeanAbsolutePercentageError(), 
+                    metrics.MeanSquaredError(),
+                    metrics.MeanAbsoluteError()
+                ]
+            )
+
+            history = self.model.fit(
+                dataset["x"], dataset["y"],
+                validation_split=0.2,
+                epochs=5, 
+                batch_size=600,
+                verbose=0
+            )
+
+            self.loss = float("%.2f" % history.history['loss'][0])
+            self.val_loss = float("%.2f" % history.history['val_loss'][0])
+            self.mape = float("%.2f" % (history.history['mean_absolute_percentage_error'][0]))
+            self.val_mape = float("%.2f" % history.history['val_mean_absolute_percentage_error'][0])
+            self.mse = float("%.2f" % (history.history['mean_squared_error'][0]))
+            self.val_mse = float("%.2f" % history.history['val_mean_squared_error'][0])
+            self.mae = float("%.2f" % (history.history['mean_absolute_error'][0]))
+            self.val_mae = float("%.2f" % history.history['mean_absolute_error'][0])
+            mean = (self.loss + self.val_loss + self.mape + self.val_mape + self.mse + self.val_mse)/6
+            self.fitnessScore = float("%.2f" % mean)
+        else:
+            self.model.compile(
+                optimizer="adam",
+                loss="categorical_crossentropy", 
+                metrics=["accuracy"]
+            )
+
+            history = self.model.fit(
+                self.dataset["x"], self.dataset["y"],
+                validation_split=0.2,
+                epochs=5, 
+                batch_size=600, 
+                verbose=0
+            )
+
+            self.loss = float("%.2f" % history.history['loss'][0])
+            self.accuracy = float("%.2f" % (history.history['accuracy'][0]*100))
+            self.val_loss = float("%.2f" % history.history['val_loss'][0])
+            self.val_accuracy = float("%.2f" % (history.history['val_accuracy'][0]*100))
+            self.fitnessScore = float("%.2f" % ((self.accuracy+self.val_accuracy)/2))
+    
+    def serialize(self):
+        if(self.isRegression):
+            return {
+                'mape': self.mape,
+                'val_mape': self.val_mape,
+                'mse': self.mse,
+                'val_mse': self.val_mse,
+                'mae': self.mae,
+                'val_mae': self.val_mae,
+                'loss': self.loss,
+                'val_loss': self.val_loss,
+                'fitnessScore': self.fitnessScore,
+                'optimizer': "adam",
+                'architecture': self.toString()
+            }
+        else:
+            return {
+                'accuracy': self.accuracy,
+                'val_accuracy': self.val_accuracy,
+                'average_accuracy': self.fitnessScore,
+                'loss': self.loss,
+                'val_loss': self.val_loss,
+                'optimizer': self.optimizer,
+                'architecture': self.toString()
+            }

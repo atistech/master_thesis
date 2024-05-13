@@ -1,20 +1,17 @@
-from GeneticAlgorithm import GeneticAlgorithm
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from Tool import Tool
 
-generationCount = 0
 params_dict = {
     "dataset": "nn/sample_dataset1.csv",
-    "populationSize": 10,
+    "populationSize": 4,
     "IsRegression": True
 }
-ga = GeneticAlgorithm(param_dict=params_dict)
+tool = Tool(params_dict)
+results = tool.firstModels()
 
-results = ga.initialPopulation()
-
-print("Generation: "+str(generationCount))
+print("Generation: {tool.generationCount}")
 for r in results:
     print(r.serialize())
+"""
 while generationCount < 10:
     results = ga.callback()
     print("Generation: "+str(generationCount))
@@ -24,3 +21,4 @@ while generationCount < 10:
 
 print("Solution found.")
 print(ga.individuals[0].serialize())
+"""
