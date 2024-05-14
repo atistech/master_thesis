@@ -33,7 +33,6 @@ def startSearch():
     if answer:
         startButton.config(state="disabled")
         tree1.delete(*tree1.get_children())
-        tree2.delete(*tree2.get_children())
         
         generationCount = 0
         search_engine = NNSearchEngine(param)
@@ -51,54 +50,11 @@ window.title("Neural Network Model Search Engine")
 
 parameters_frame = tk.Frame(window)
 parameters_frame.grid(row=0, column=0, padx=10, pady=10)
-results_frame = tk.Frame(window)
-results_frame.grid(row=0, column=1, padx=10, pady=10)
 
 ### Main Control Frame ###
 top_frame = tk.Frame(parameters_frame)
 top_frame.pack(fill='both', pady=60)
 ttk.Label(top_frame, text="Neural Network Model Search Engine", font=("Arial", 14)).pack(anchor="center", pady=10)
-startButton = tk.Button(top_frame, text="Start Search", font=("Arial", 10), command=startSearchThreading)
-startButton.pack(padx=5, pady=5)
-
-### Dataset Parameters Frame ###
-dataset_frame = tk.LabelFrame(parameters_frame, text="Dataset Parameters")
-dataset_frame.pack()
-problemType_value = tk.StringVar()
-ttk.Label(dataset_frame, text="Problem Type:").grid(row=0, column=0, padx=20, pady=10)
-combobox(dataset_frame, problemType_value, ("Multiclass Classification", "Binary Classification"), 0, 1)
-datasetSelection_value = tk.StringVar()
-datasetSelection_value_str = ""
-ttk.Label(dataset_frame, text="Dataset Selection:").grid(row=1, column=0, padx=20, pady=10)
-#combobox(dataset_frame, datasetSelection_value, ("Mnist", "Fashion Mnist"), 1, 1)
-def select_file():
-    filetypes = (
-        ('CSV files', '*.csv'),
-        ('All files', '*.*')
-    )
-    filename = fd.askopenfilename(
-        title='Open a file',
-        initialdir='/',
-        filetypes=filetypes)
-    datasetSelection_value.set(filename)
-    showinfo(
-        title='Selected File',
-        message=filename
-    )
-# open button
-ttk.Button(dataset_frame, text='Open a File', command=select_file).grid(row=1, column=1, padx=20, pady=10)
-trainTestSplit_value = tk.StringVar()
-ttk.Label(dataset_frame, text="Train-Test Split Ratio:").grid(row=1, column=3, padx=20, pady=10)
-combobox(dataset_frame, trainTestSplit_value, (0.2, 0.33), 1, 4)
-inputLayer_value = tk.StringVar()
-inputLayer_value.set("(28*28, )")
-ttk.Label(dataset_frame, text="Input Layer:").grid(row=2, column=0, padx=5, pady=10)
-ttk.Entry(dataset_frame, textvariable=inputLayer_value, state="readonly").grid(row=2, column=1, padx=5, pady=10)
-ttk.Label(dataset_frame).grid(row=1, column=2, padx=20, pady=10)
-outputLayer_value = tk.StringVar()
-outputLayer_value.set("Dense Softmax 10")
-ttk.Label(dataset_frame, text="Output Layer:").grid(row=2, column=3, padx=5, pady=10)
-ttk.Entry(dataset_frame, textvariable=outputLayer_value, state="readonly").grid(row=2, column=4, padx=5, pady=10)
 
 ### Genetic Algorithm Parameters Frame ###
 ga_frame = tk.LabelFrame(parameters_frame, text="Genetic Algorithm Parameters")
@@ -115,11 +71,33 @@ combobox = ttk.Combobox(ga_frame, textvariable=maxGenerationCount_value, values=
 combobox.current(9)
 combobox.grid(row=0, column=4, padx=5, pady=10)
 
-ttk.Label(parameters_frame, text="Developed by Atakan Şentürk").pack(anchor='w', pady=10)
+### Dataset Parameters Frame ###
+dataset_frame = tk.LabelFrame(parameters_frame, text="Dataset Parameters")
+dataset_frame.pack()
+datasetSelection_value = tk.StringVar()
+def select_file():
+    filetypes = (
+        ('CSV files', '*.csv'),
+        ('All files', '*.*')
+    )
+    filename = fd.askopenfilename(
+        title='Open a file',
+        initialdir='/',
+        filetypes=filetypes)
+    datasetSelection_value.set(filename)
+    showinfo(
+        title='Selected File',
+        message=filename
+    )
+# open button
+ttk.Button(dataset_frame, text='Open a File', command=select_file).grid(row=1, column=1, padx=20, pady=10)
+
+startButton = tk.Button(top_frame, text="Start Search", font=("Arial", 10), command=startSearchThreading)
+startButton.pack(padx=5, pady=5)
 
 def selectItem(a):
-    curItem = tree2.focus()
-    item = tree2.item(curItem)
+    curItem = tree1.focus()
+    item = tree1.item(curItem)
     messagebox.showinfo(message=str(item))
 
 def createResultsTreeview(root):
@@ -148,12 +126,10 @@ def createResultsTreeview(root):
     tree.bind('<ButtonRelease-1>', selectItem)
     return tree
 
-best_results_frame = tk.LabelFrame(results_frame, text="Best Results")
+best_results_frame = tk.LabelFrame(parameters_frame, text="Search Results")
 best_results_frame.pack()
 tree1 = createResultsTreeview(best_results_frame)
 
-all_results_frame = tk.LabelFrame(results_frame, text="All Results")
-all_results_frame.pack()
-tree2 = createResultsTreeview(all_results_frame)
+ttk.Label(parameters_frame, text="Developed by Atakan Şentürk").pack(anchor='w', pady=10)
 
 window.mainloop()
