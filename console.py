@@ -1,24 +1,17 @@
-from Tool import Tool
+from src.nn_search_engine import NNSearchEngine
 
 params_dict = {
-    "dataset": "nn/sample_dataset1.csv",
+    "dataset": "sample_datasets/sample_dataset1.csv",
     "populationSize": 4,
+    "maxGenerationCount": 2,
     "IsRegression": True
 }
-tool = Tool(params_dict)
-results = tool.firstModels()
+search_engine = NNSearchEngine(params_dict)
 
-print("Generation: {tool.generationCount}")
-for r in results:
-    print(r.serialize())
-"""
-while generationCount < 10:
-    results = ga.callback()
-    print("Generation: "+str(generationCount))
-    for r in results:
-        print(r.serialize()) 
-    generationCount += 1
+for iteration_models in search_engine:
+    print(f"Generation: {search_engine.generationCount}")
+    for model in iteration_models:
+        print(model.toDict())
 
 print("Solution found.")
-print(ga.individuals[0].serialize())
-"""
+print(search_engine.finalBestFoundModel().toDict())

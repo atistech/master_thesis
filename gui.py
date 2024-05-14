@@ -1,12 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import nn.Params as params
-from GeneticAlgorithm import GeneticAlgorithm
+from src.nn_search_engine import NNSearchEngine
 import threading
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
-import os
 
 def combobox(root, text_variable, values, row, column):
     combobox = ttk.Combobox(root, textvariable=text_variable, values=values, state="readonly")
@@ -27,7 +25,8 @@ def startSearch():
     param = {
         "dataset": datasetSelection_value.get(),
         "populationSize": populationSize_value.get(),
-        "IsRegression": True
+        "maxGenerationCount": 2,
+        "IsRegression": False
     }
     answer = messagebox.askokcancel(message=param)
 
@@ -37,21 +36,13 @@ def startSearch():
         tree2.delete(*tree2.get_children())
         
         generationCount = 0
-        algorithm = GeneticAlgorithm(param_dict=param)
-        fitnessResults = algorithm.initialPopulation()
-        populationResult = algorithm.initialPopulation()
-        #populationResult = algorithm.populationResult()
-        addResultsToTreeview(generationCount, fitnessResults, populationResult)
+        search_engine = NNSearchEngine(param)
         
-        while generationCount < int(maxGenerationCount_value.get()):
-            generationCount += 1
-            algorithm.selection()
-            algorithm.crossOver()
-            algorithm.mutation()
-            fitnessResults = algorithm.calculateFitness()
-            populationResult = algorithm.populationResult()
-            addResultsToTreeview(generationCount, fitnessResults, populationResult)
-        
+        for iteration_models in search_engine:
+            for model in iteration_models:
+                addResultsToTreeview(search_engine.generationCount, fitnessResults, populationResult)
+
+
         startButton.config(state="active")
 
 window = tk.Tk()
@@ -143,11 +134,9 @@ def createResultsTreeview(root):
         else:
             tree.column(str(i), width = 80, anchor ='c')
     tree.heading("1", text ="Generation")
-    tree.heading("2", text ="Accuracy")
-    tree.heading("3", text ="Loss")
-    tree.heading("4", text ="Val-Accuracy")
-    tree.heading("5", text ="Val-Loss")
-    tree.heading("6", text ="Model Architecture")
+    tree.heading("2", text ="Fitness Score")
+    tree.heading("3", text ="Model History")
+    tree.heading("4", text ="Model Architecture")
 
     tree_scroll_y = tk.Scrollbar(sub_frame, orient="vertical", command=tree.yview)
     tree_scroll_y.pack(side="right", fill="y")

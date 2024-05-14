@@ -3,7 +3,7 @@ import os, sys
 
 parent = os.path.abspath('.')
 sys.path.insert(1, parent)
-from GeneticAlgorithm import GeneticAlgorithm
+from src.genetic_algorithm import GeneticAlgorithm
 
 app = Flask(__name__)
 ga = object

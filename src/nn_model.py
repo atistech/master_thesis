@@ -1,27 +1,28 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+from keras.models import Model as KerasModel
 from keras.layers import Dense, Input
 from keras import metrics
-from keras.models import Model as KerasModel
-import nn.Params as Params
-from nn.Layer import Layer
+import src.utils as utils
 import random
 
-class Model(object):
-    
+class Layer():
+    def __init__(self, units = utils.randomLayerOutputs(), activation = utils.randomLayerActivations()):
+        self.units = units
+        self.activation = activation
+
+class NNModel():
     def __init__(self, isRandom, layers, isRegression):
         if isRandom:
             self.layers = []
-            layersCount = Params.randomLayerNums()
+            layersCount = utils.randomLayerNums()
             for i in range(layersCount):
                 self.layers.append(Layer())
-            for i in range(4-layersCount):
-                self.layers.append(Layer("",""))
             self.layers.append(Layer(units=1, activation="sigmoid"))
-            self.toKeras()
         else:
             self.layers = layers
-            self.toKeras()
+        self.toKeras()
+        self.optimizer = utils.randomModelOptimizers()
         self.isRegression = isRegression
 
     def toKeras(self):
@@ -39,50 +40,12 @@ class Model(object):
         layersLength = len(self.layers)
         for i in range(random.randint(1, layersLength)):
             index = random.randint(0, layersLength-1)
-            random_activation = random.choice(Params.layerActivations)
-            random_output = random.choice(Params.layerOutputs)
-            self.layers[index] = {
-                    "activation": random_activation,
-                    "output": random_output
-                }
-    
-    def toString(self):
-        toString = ""
-        for layer in self.layers:
-            if layer.activation != "":
-                toString += "dense-{}-{}/".format(layer.activation, layer.units)
-            else:
-                toString += "empty_layer/"
-        return toString
-    
-    """
-    def toPythonCode(self):
-        stringModel = "from keras import Sequential\n"
-        stringModel += "from keras.layers import Input, Dense\n\n"
-        stringModel += "train_x, train_y, test_x, test_y = [], [], [], []\n\n"
-        stringModel += "model = Sequential()\n"
-        stringModel += "model.add(Input(shape=({}, )))\n".format(self.dataset["input"].shape[1])
-        for layer in self.layers:
-            if layer.activation != "":
-                stringModel += "model.add(Dense(units={}, activation='{}'))\n".format(layer.units, layer.activation)
-        
-        stringModel += "model.add(Dense(units={}, activation='{}'))\n\n".format(self.dataset["output"]["output"], self.dataset["output"]["activation"])
-        
-        stringModel += "model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\n\n"
-
-        stringModel += "history = model.fit(train_x, train_y, validation_data=(test_x, test_y), epochs=1, batch_size=32, verbose=0)"
-
-        file = open('deneme.py', 'w')
-        file.write(stringModel)
-        file.close()
-
-        return stringModel
-    """
+            self.layers[index] = Layer()
 
     def calculateResult(self, dataset):
         if(self.isRegression):
             self.model.compile(
-                optimizer="adam",
+                optimizer=self.optimizer,
                 loss="binary_crossentropy",
                 metrics=[
                     metrics.MeanAbsolutePercentageError(), 
@@ -99,6 +62,8 @@ class Model(object):
                 verbose=0
             )
 
+            print(history.history)
+
             self.loss = float("%.2f" % history.history['loss'][0])
             self.val_loss = float("%.2f" % history.history['val_loss'][0])
             self.mape = float("%.2f" % (history.history['mean_absolute_percentage_error'][0]))
@@ -111,7 +76,7 @@ class Model(object):
             self.fitnessScore = float("%.2f" % mean)
         else:
             self.model.compile(
-                optimizer="adam",
+                optimizer=self.optimizer,
                 loss="categorical_crossentropy", 
                 metrics=["accuracy"]
             )
@@ -130,7 +95,14 @@ class Model(object):
             self.val_accuracy = float("%.2f" % (history.history['val_accuracy'][0]*100))
             self.fitnessScore = float("%.2f" % ((self.accuracy+self.val_accuracy)/2))
     
-    def serialize(self):
+    def architectureString(self):
+        architectureString = ""
+        for layer in self.layers:
+            if layer.activation != "":
+                architectureString += "{}-{}/".format(layer.activation, layer.units)
+        return architectureString
+    
+    def toDict(self):
         if(self.isRegression):
             return {
                 'mape': self.mape,
@@ -142,8 +114,8 @@ class Model(object):
                 'loss': self.loss,
                 'val_loss': self.val_loss,
                 'fitnessScore': self.fitnessScore,
-                'optimizer': "adam",
-                'architecture': self.toString()
+                'optimizer': self.optimizer,
+                'architecture': self.architectureString()
             }
         else:
             return {
@@ -153,5 +125,5 @@ class Model(object):
                 'loss': self.loss,
                 'val_loss': self.val_loss,
                 'optimizer': self.optimizer,
-                'architecture': self.toString()
+                'architecture': self.architectureString()
             }
