@@ -3,7 +3,7 @@ from src.genetic_algorithm import GeneticAlgorithm
 class NNSearchEngine():
     def __init__(self, params_dict):
         self.generationCount = 0
-        self.maxGenerationCount = params_dict["maxGenerationCount"]
+        self.maxGenerationCount = int(params_dict["maxGenerationCount"])
         self.ga = GeneticAlgorithm(param_dict=params_dict)
     
     def __iter__(self):

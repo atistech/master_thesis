@@ -6,130 +6,126 @@ import threading
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
 
+s = ttk.Style()
+s.configure("text.TRadioButton", font=("Helvetica", 12))
+
 def combobox(root, text_variable, values, row, column):
     combobox = ttk.Combobox(root, textvariable=text_variable, values=values, state="readonly")
     combobox.set(values[0])
-    combobox.grid(row=row, column=column, padx=5, pady=10)
-
-def addResultsToTreeview(count, result1, result2):
-    for result in result1:
-        values_to_insert = [count, result.accuracy, result.loss, result.val_accuracy, result.val_loss, result.toString()]
-        tree2.insert("", 'end', values=values_to_insert)
-    values_to_insert = [count, result2.accuracy, result2.loss, result2.val_accuracy, result2.val_loss, result2.toString()]
-    tree1.insert("", 'end', values=values_to_insert)
+    combobox.grid(row=row, column=column, padx=5, pady=0)
 
 def startSearchThreading():
-    threading.Thread(target=startSearch).start()
+    if(datasetSelection_value.get() == ""):
+        messagebox.showwarning(title="Warning", message="Please, firstly select a csv file!!")
+    else:
+        threading.Thread(target=startSearch).start()
 
 def startSearch():
     param = {
         "dataset": datasetSelection_value.get(),
         "populationSize": populationSize_value.get(),
-        "maxGenerationCount": 2,
-        "IsRegression": False
+        "maxGenerationCount": maxGenerationCount_value.get(),
+        "IsRegression": True if problemType.get()==1 else False
     }
     answer = messagebox.askokcancel(message=param)
 
     if answer:
-        startButton.config(state="disabled")
-        tree1.delete(*tree1.get_children())
+        startSearchButton.config(state="disabled")
+        tree.delete(*tree.get_children())
         
-        generationCount = 0
         search_engine = NNSearchEngine(param)
         
         for iteration_models in search_engine:
             for model in iteration_models:
-                addResultsToTreeview(search_engine.generationCount, fitnessResults, populationResult)
-
-
-        startButton.config(state="active")
+                model = model.toDict()
+                values_to_insert = [search_engine.generationCount, model["fitnessScore"], model["architecture"], model["history"]]
+                tree.insert("", 'end', values=values_to_insert)
+            level.set(int(100*search_engine.generationCount/int(maxGenerationCount_value.get())))
+        
+        messagebox.showinfo(title="Info", message="Searching has finished.")
+        startSearchButton.config(state="active")
+        level.set(0)
 
 window = tk.Tk()
-window.resizable(False, False)
-window.title("Neural Network Model Search Engine")
-
-parameters_frame = tk.Frame(window)
-parameters_frame.grid(row=0, column=0, padx=10, pady=10)
+#window.resizable(False, False)
+window.title("Neural Network Search Engine")
 
 ### Main Control Frame ###
-top_frame = tk.Frame(parameters_frame)
-top_frame.pack(fill='both', pady=60)
-ttk.Label(top_frame, text="Neural Network Model Search Engine", font=("Arial", 14)).pack(anchor="center", pady=10)
+ttk.Label(window, text="Neural Network Search Engine", font=("Helvetica", 14)).pack(anchor="center", pady=10)
 
 ### Genetic Algorithm Parameters Frame ###
-ga_frame = tk.LabelFrame(parameters_frame, text="Genetic Algorithm Parameters")
-ga_frame.pack(fill='x')
+ga_frame = tk.LabelFrame(window, text="Parameters Selection")
+ga_frame.pack(fill='x', padx=10, pady=10)
+
 populationSize_value = tk.StringVar()
-ttk.Label(ga_frame, text="Population Size:").grid(row=0, column=0, padx=5, pady=10)
-combobox = ttk.Combobox(ga_frame, textvariable=populationSize_value, values=[i for i in range(2,11,2)], state="readonly")
-combobox.current(4)
-combobox.grid(row=0, column=1, padx=5, pady=10)
-ttk.Label(ga_frame).grid(row=0, column=2, padx=20, pady=10)
+ttk.Label(ga_frame, text="Population Size:", font=("Helvetica", 10)).grid(row=1, column=0)
+combobox(ga_frame, populationSize_value, [*range(4,11,2)], row=1, column=1)
+
 maxGenerationCount_value = tk.StringVar()
-ttk.Label(ga_frame, text="Max Generation Count:").grid(row=0, column=3, padx=5, pady=10)
-combobox = ttk.Combobox(ga_frame, textvariable=maxGenerationCount_value, values=[i for i in range(1,11)], state="readonly")
-combobox.current(9)
-combobox.grid(row=0, column=4, padx=5, pady=10)
+ttk.Label(ga_frame, text="Max Generation Count:", font=("Helvetica", 10)).grid(row=1, column=3)
+combobox(ga_frame, maxGenerationCount_value, [*range(1,11)], row=1, column=4)
 
-### Dataset Parameters Frame ###
-dataset_frame = tk.LabelFrame(parameters_frame, text="Dataset Parameters")
-dataset_frame.pack()
 datasetSelection_value = tk.StringVar()
+ttk.Label(ga_frame, text="Dataset:").grid(row=0, column=0, padx=5, pady=10)
 def select_file():
-    filetypes = (
-        ('CSV files', '*.csv'),
-        ('All files', '*.*')
-    )
     filename = fd.askopenfilename(
-        title='Open a file',
-        initialdir='/',
-        filetypes=filetypes)
-    datasetSelection_value.set(filename)
-    showinfo(
-        title='Selected File',
-        message=filename
+        title="Open CSV File",
+        filetypes=(
+            ("CSV files", "*.csv"),
+        )
     )
-# open button
-ttk.Button(dataset_frame, text='Open a File', command=select_file).grid(row=1, column=1, padx=20, pady=10)
+    datasetSelection_value.set(filename)
+ttk.Button(ga_frame, text="Open CSV File", command=select_file).grid(row=0, column=1, padx=5, pady=10)
+#ttk.Label(ga_frame, textvariable=datasetSelection_value).grid(row=0, column=2, padx=10, pady=10)
 
-startButton = tk.Button(top_frame, text="Start Search", font=("Arial", 10), command=startSearchThreading)
-startButton.pack(padx=5, pady=5)
+problemTypeFrame = tk.LabelFrame(ga_frame, text="Problem Type")
+problemTypeFrame.grid(row=2, column=0)
+problemType = tk.IntVar()
+print(ttk.Radiobutton(problemTypeFrame, text="Classifciation", variable=problemType, value=2).winfo_class())
+ttk.Radiobutton(problemTypeFrame, text="Regression", variable=problemType, value=1, style="text.TRadioButton").pack()
+ttk.Radiobutton(problemTypeFrame, text="Classifciation", variable=problemType, value=2, style="text.TRadioButton").pack()
+
+startSearchButton = ttk.Button(ga_frame, text="Start Search", command=startSearchThreading)
+startSearchButton.grid(row=3, column=0, padx=5, pady=10)
 
 def selectItem(a):
-    curItem = tree1.focus()
-    item = tree1.item(curItem)
+    curItem = tree.focus()
+    item = tree.item(curItem)
     messagebox.showinfo(message=str(item))
 
-def createResultsTreeview(root):
-    sub_frame = tk.Frame(root)
-    sub_frame.pack(padx=10, pady=10)
+best_results_frame = tk.LabelFrame(window, text="Search Results")
+best_results_frame.pack(fill='x', padx=10, pady=10)
+
+sub_frame = tk.Frame(best_results_frame)
+sub_frame.pack(padx=10, pady=10)
     
-    tree = ttk.Treeview(sub_frame, show="headings", selectmode="browse")
-    tree["columns"] = ("1", "2", "3", "4", "5", "6")
-    for i in range(6):
-        if i==6:
-            tree.column(str(i), width = 300, anchor ='w')
-        else:
-            tree.column(str(i), width = 80, anchor ='c')
-    tree.heading("1", text ="Generation")
-    tree.heading("2", text ="Fitness Score")
-    tree.heading("3", text ="Model History")
-    tree.heading("4", text ="Model Architecture")
-
-    tree_scroll_y = tk.Scrollbar(sub_frame, orient="vertical", command=tree.yview)
-    tree_scroll_y.pack(side="right", fill="y")
-    tree_scroll_x = tk.Scrollbar(sub_frame, orient="horizontal", command=tree.xview)
-    tree_scroll_x.pack(side="bottom", fill="x")
+tree = ttk.Treeview(sub_frame, show="headings")
+tree["columns"] = ("1", "2", "3", "4")
     
-    tree.configure(xscrollcommand=tree_scroll_x.set, yscrollcommand=tree_scroll_y.set)
-    tree.pack()
-    tree.bind('<ButtonRelease-1>', selectItem)
-    return tree
+tree.column("1", width = 80, anchor ='w')
+tree.heading("1", text ="Generation")
 
-best_results_frame = tk.LabelFrame(parameters_frame, text="Search Results")
-best_results_frame.pack()
-tree1 = createResultsTreeview(best_results_frame)
+tree.column("2", width = 100, anchor ='w')
+tree.heading("2", text ="Fitness Score")
 
-ttk.Label(parameters_frame, text="Developed by Atakan Şentürk").pack(anchor='w', pady=10)
+tree.column("3", width = 300, anchor ='w')
+tree.heading("3", text ="Model Architecture")
+
+tree.column("4", width = 300, anchor ='w')
+tree.heading("4", text ="Model History")
+
+tree_scroll_y = ttk.Scrollbar(sub_frame, orient="vertical", command=tree.yview)
+tree_scroll_y.pack(side="right", fill="y")
+tree_scroll_x = ttk.Scrollbar(sub_frame, orient="horizontal", command=tree.xview)
+tree_scroll_x.pack(side="bottom", fill="x")
+    
+tree.configure(xscrollcommand=tree_scroll_x.set, yscrollcommand=tree_scroll_y.set)
+tree.pack()
+#tree.bind('<ButtonRelease-1>', selectItem)
+
+level = tk.IntVar()
+progressbar = ttk.Progressbar(orient=tk.HORIZONTAL, length=780, variable=level).pack(anchor='w', padx=20, pady=10)
+
+ttk.Label(window, text="Developed by Atakan Şentürk").pack(anchor='w', padx=10, pady=10)
 
 window.mainloop()

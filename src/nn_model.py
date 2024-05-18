@@ -50,7 +50,8 @@ class NNModel():
                 metrics=[
                     metrics.MeanAbsolutePercentageError(), 
                     metrics.MeanSquaredError(),
-                    metrics.MeanAbsoluteError()
+                    metrics.MeanAbsoluteError(),
+                    metrics.RootMeanSquaredError()
                 ]
             )
 
@@ -71,7 +72,7 @@ class NNModel():
             self.mse = float("%.2f" % (history.history['mean_squared_error'][0]))
             self.val_mse = float("%.2f" % history.history['val_mean_squared_error'][0])
             self.mae = float("%.2f" % (history.history['mean_absolute_error'][0]))
-            self.val_mae = float("%.2f" % history.history['mean_absolute_error'][0])
+            self.val_mae = float("%.2f" % history.history['val_mean_absolute_error'][0])
             mean = (self.loss + self.val_loss + self.mape + self.val_mape + self.mse + self.val_mse)/6
             self.fitnessScore = float("%.2f" % mean)
         else:
@@ -98,32 +99,30 @@ class NNModel():
     def architectureString(self):
         architectureString = ""
         for layer in self.layers:
-            if layer.activation != "":
-                architectureString += "{}-{}/".format(layer.activation, layer.units)
+            architectureString += f"{layer.activation}-{layer.units}/"
+        architectureString += f"{self.optimizer}"
         return architectureString
     
     def toDict(self):
         if(self.isRegression):
             return {
-                'mape': self.mape,
-                'val_mape': self.val_mape,
-                'mse': self.mse,
-                'val_mse': self.val_mse,
-                'mae': self.mae,
-                'val_mae': self.val_mae,
-                'loss': self.loss,
-                'val_loss': self.val_loss,
+                'history': f"mape: {self.mape},"+
+                f"'val_mape': {self.val_mape},"+
+                f"mse: {self.mse},"+
+                f"val_mse: {self.val_mse},"+
+                f"mae: {self.mae},"+
+                f"val_mae: {self.val_mae},"+
+                f"loss: {self.loss},"+
+                f"val_loss: {self.val_loss}",
                 'fitnessScore': self.fitnessScore,
-                'optimizer': self.optimizer,
                 'architecture': self.architectureString()
             }
         else:
             return {
-                'accuracy': self.accuracy,
-                'val_accuracy': self.val_accuracy,
-                'average_accuracy': self.fitnessScore,
-                'loss': self.loss,
-                'val_loss': self.val_loss,
-                'optimizer': self.optimizer,
+                'history': f"accuracy: {self.accuracy},"+
+                f"val_accuracy: {self.val_accuracy},"+
+                f"loss: {self.loss},"+
+                f"val_loss: {self.val_loss}",
+                'fitnessScore': self.fitnessScore,
                 'architecture': self.architectureString()
             }
