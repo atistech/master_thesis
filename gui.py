@@ -4,8 +4,6 @@ from tkinter import messagebox
 from src.nn_search_engine import NNSearchEngine
 import threading
 from tkinter import filedialog as fd
-from tkinter.messagebox import showinfo
-from tkinter import scrolledtext
 
 def combobox(root, text_variable, values, row, column):
     combobox = ttk.Combobox(root, textvariable=text_variable, values=values, state="readonly", width=10)
@@ -30,8 +28,7 @@ def startSearch():
     if answer:
         startSearchButton.config(state="disabled")
         tree.delete(*tree.get_children())
-        progressbar = ttk.Progressbar(searchResultsframe, orient=tk.HORIZONTAL, mode="indeterminate")
-        progressbar.pack(fill="x", padx=20, pady=5)
+        bestResultTree.delete(*bestResultTree.get_children())
         progressbar.start()
         
         search_engine = NNSearchEngine(param)
@@ -48,15 +45,13 @@ def startSearch():
         values_to_insert = [search_engine.generationCount, bestModel["fitnessScore"], bestModel["architecture"], bestModel["history"]]
         bestResultTree.insert("", 'end', values=values_to_insert)
         progressbar.stop()
-        progressbar.pack_forget()
         messagebox.showinfo(title="Bilgi", message="Model araması tamamlandı.")
         startSearchButton.config(state="active")
 
 window = tk.Tk()
 window.resizable(False, False)
-window.geometry("805x700")
-window.title("Neural Network Search Engine")
-
+window.geometry("850x700")
+window.title("Yapay Sinir Ağı Modeli Arama Motoru")
 
 ttk.Label(window, text="Yapay Sinir Ağı Modeli Arama Motoru", font=("TkDefaultFont", 12)).pack(anchor="center", pady=10)
 
@@ -99,10 +94,12 @@ ttk.Label(geneticParamsFrame, text="Maksimum Nesil Sayısı:", width=25).grid(ro
 combobox(geneticParamsFrame, maxGenerationCount_value, [*range(1,11)], row=1, column=1)
 
 
-buttonsFrame = tk.LabelFrame(paramsFrame, text="Operasyonlar", padx=15, pady=15)
+buttonsFrame = tk.LabelFrame(paramsFrame, text="Operasyonlar", padx=10, pady=10)
 buttonsFrame.pack(side="left", fill="y", padx=5)
 startSearchButton = ttk.Button(buttonsFrame, text="BAŞLAT", command=startSearchThreading)
-startSearchButton.pack(pady=15)
+startSearchButton.grid(row=0, column=0, pady=5)
+progressbar = ttk.Progressbar(buttonsFrame, orient=tk.HORIZONTAL, mode="indeterminate")
+progressbar.grid(row=1, column=0)
 
 def selectItem(a):
     curItem = tree.focus()
