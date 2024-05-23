@@ -41,12 +41,15 @@ def startSearch():
                 tree.insert("", 'end', values=values_to_insert)
             bestModel = iteration_models[0]
         
+        global lastBestModel
+        lastBestModel = bestModel
         bestModel = bestModel.toDict()
         values_to_insert = [search_engine.generationCount, bestModel["fitnessScore"], bestModel["architecture"], bestModel["history"]]
         bestResultTree.insert("", 'end', values=values_to_insert)
         progressbar.stop()
         messagebox.showinfo(title="Bilgi", message="Model araması tamamlandı.")
         startSearchButton.config(state="active")
+        saveButton.config(state="active")
 
 window = tk.Tk()
 window.resizable(False, False)
@@ -142,6 +145,25 @@ bestResultTree.heading("3", text ="Model Mimarisi")
 bestResultTree.column("4", width = 300, anchor ='c')
 bestResultTree.heading("4", text ="Model Metrik Sonuçları")
 bestResultTree.pack(fill=tk.BOTH, expand=True)
+
+def saveModel():
+    saveButton.config(state="disabled")
+    folderName = fd.askdirectory(
+        title="Klasör Seç"
+    )
+    lastBestModel.model.save(f"{folderName}/bestModel.{fileType.get()}")
+    messagebox.showinfo(title="Bilgi", message="Model kaydedildi.")
+    saveButton.config(state="active")
+
+fileTypeFrame = tk.LabelFrame(bestResultframe, text="Model Kaydetme Ayarları", padx=20, pady=10)
+fileTypeFrame.pack()
+fileType = tk.StringVar()
+fileType.set("h5")
+ttk.Radiobutton(fileTypeFrame, text=".h5", width=21, variable=fileType, value="h5").pack(side="left")
+ttk.Radiobutton(fileTypeFrame, text=".keras", width=21, variable=fileType, value="keras").pack(side="left")
+saveButton = ttk.Button(fileTypeFrame, text="Modeli Kaydet", command=saveModel)
+saveButton.pack(side="left")
+saveButton.config(state="disabled")
 
 ttk.Label(window, text="Developed by Atakan Şentürk").pack(anchor='w', padx=10, pady=10)
 
