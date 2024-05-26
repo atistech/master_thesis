@@ -38,5 +38,5 @@ class GeneticAlgorithm():
     def calculation(self):
         for model in self.models:
             model.calculateResult(self.dataset)
-        self.models.sort(key=lambda i: i.fitnessScore, reverse=True)
+        self.models.sort(key=lambda i: i.fitnessScore, reverse=False)
         return self.models

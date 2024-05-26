@@ -107,7 +107,7 @@ class NNModel():
         if(self.isRegression):
             return {
                 'history': f"mape: {self.mape},"+
-                f"'val_mape': {self.val_mape},"+
+                f"val_mape: {self.val_mape},"+
                 f"mse: {self.mse},"+
                 f"val_mse: {self.val_mse},"+
                 f"mae: {self.mae},"+

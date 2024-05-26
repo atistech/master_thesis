@@ -118,7 +118,7 @@ tree.column("1", width = 50, anchor ='c')
 tree.heading("1", text ="Nesil")
 
 tree.column("2", width = 100, anchor ='c')
-tree.heading("2", text ="Fitness Score")
+tree.heading("2", text ="Fitness Skoru")
 
 tree.column("3", width = 270, anchor ='c')
 tree.heading("3", text ="Model Mimarisi")
@@ -139,7 +139,7 @@ bestResultTree = ttk.Treeview(bestResultframe, columns=("1", "2", "3", "4"), sho
 bestResultTree.column("1", width = 50, anchor ='c')
 bestResultTree.heading("1", text ="Nesil")
 bestResultTree.column("2", width = 100, anchor ='c')
-bestResultTree.heading("2", text ="Fitness Score")
+bestResultTree.heading("2", text ="Fitness Skoru")
 bestResultTree.column("3", width = 270, anchor ='c')
 bestResultTree.heading("3", text ="Model Mimarisi")
 bestResultTree.column("4", width = 300, anchor ='c')
