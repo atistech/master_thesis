@@ -23,7 +23,7 @@ class GeneticAlgorithm():
         layersPool.extend(self.firstFittestModel.layers)
         layersPool.extend(self.secondFittestModel.layers)
 
-        for i in range(len(self.models)):
+        for i in range(self.populationSize - len(self.models)):
             random.shuffle(layersPool)
             amount = random.randint(1,3)
             newLayers = []
