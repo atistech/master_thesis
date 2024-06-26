@@ -1,4 +1,3 @@
-from keras.layers import Input
 import pandas as pd
 import random
 
@@ -33,7 +32,7 @@ def readCSVDataset(file_path):
     #print(outputs.shape)
 
     return {
-        "input":  Input(shape=(len(input_heads), )),
+        "input":  len(input_heads),
         "x": inputs,
         "y": outputs,
         "output": {

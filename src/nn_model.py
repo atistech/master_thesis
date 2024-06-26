@@ -16,7 +16,7 @@ class Layer():
             self.activation = activation
 
 class NNModel():
-    def __init__(self, isRandom, layers, isRegression):
+    def __init__(self, isRandom, layers, isRegression, input_len):
         if isRandom:
             self.layers = []
             layersCount = utils.randomLayerNums()
@@ -25,12 +25,13 @@ class NNModel():
             self.layers.append(Layer(isRandom=False, units=1, activation="sigmoid"))
         else:
             self.layers = layers
+        self.input_len = input_len
         self.toKeras()
         self.optimizer = utils.randomModelOptimizers()
         self.isRegression = isRegression
 
     def toKeras(self):
-        input = Input(shape=(3, ))
+        input = Input(shape=(self.input_len, ))
         last = input
         for layer in self.layers:
             if layer.activation != "":

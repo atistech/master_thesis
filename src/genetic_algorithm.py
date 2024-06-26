@@ -9,7 +9,7 @@ class GeneticAlgorithm():
         self.isRegression = param_dict["IsRegression"]
         self.populationSize = int(param_dict["populationSize"])
         for i in range(self.populationSize):
-            self.models.append(NNModel(True, [], self.isRegression))
+            self.models.append(NNModel(True, [], self.isRegression, self.dataset["input"]))
 
     def selection(self):
         self.firstFittestModel = self.models[0]
@@ -29,7 +29,7 @@ class GeneticAlgorithm():
             newLayers = []
             for i in range(amount):
                 newLayers.append(random.choice(layersPool))
-            self.models.append(NNModel(False, newLayers, self.isRegression))
+            self.models.append(NNModel(False, newLayers, self.isRegression, self.dataset["input"]))
         
     def mutation(self):
         for model in self.models[2:]:
