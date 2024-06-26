@@ -6,10 +6,10 @@ class GeneticAlgorithm():
     def __init__(self, param_dict):
         self.models = []
         self.dataset = utils.readCSVDataset(param_dict["dataset"])
-        self.isRegression = param_dict["IsRegression"]
+        self.taskType = param_dict["taskType"]
         self.populationSize = int(param_dict["populationSize"])
         for i in range(self.populationSize):
-            self.models.append(NNModel(True, [], self.isRegression, self.dataset["input"], self.dataset["output"]))
+            self.models.append(NNModel(True, [], self.taskType, self.dataset["input"], self.dataset["output"]))
 
     def selection(self):
         self.firstFittestModel = self.models[0]
@@ -29,7 +29,7 @@ class GeneticAlgorithm():
             newLayers = []
             for i in range(amount):
                 newLayers.append(random.choice(layersPool))
-            self.models.append(NNModel(False, newLayers, self.isRegression, self.dataset["input"], self.dataset["output"]))
+            self.models.append(NNModel(False, newLayers, self.taskType, self.dataset["input"], self.dataset["output"]))
         
     def mutation(self):
         for model in self.models[2:]:
@@ -38,7 +38,7 @@ class GeneticAlgorithm():
     def calculation(self):
         for model in self.models:
             model.calculateResult(self.dataset)
-        if(self.isRegression):
+        if(self.taskType == 1):
             reverse = False
         else:
             reverse = True

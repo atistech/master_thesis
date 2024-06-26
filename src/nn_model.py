@@ -16,7 +16,7 @@ class Layer():
             self.activation = activation
 
 class NNModel():
-    def __init__(self, isRandom, layers, isRegression, input_len, output_len):
+    def __init__(self, isRandom, layers, taskType, input_len, output_len):
         if isRandom:
             self.layers = []
             layersCount = utils.randomLayerNums()
@@ -28,7 +28,7 @@ class NNModel():
         self.input_len = input_len
         self.toKeras()
         self.optimizer = utils.randomModelOptimizers()
-        self.isRegression = isRegression
+        self.taskType = taskType
 
     def toKeras(self):
         input = Input(shape=(self.input_len, ))
@@ -51,7 +51,7 @@ class NNModel():
             self.layers[index] = Layer(isRandom=True)
 
     def calculateResult(self, dataset):
-        if(self.isRegression):
+        if(self.taskType == 1):
             self.model.compile(
                 optimizer=self.optimizer,
                 loss="mean_absolute_error",
@@ -72,14 +72,7 @@ class NNModel():
 
             self.loss = float("%.4f" % history.history['loss'][-1])
             self.val_loss = float("%.4f" % history.history['val_loss'][-1])
-            self.mape = float("%.2f" % (history.history['mean_absolute_percentage_error'][-1]))
-            self.val_mape = float("%.2f" % history.history['val_mean_absolute_percentage_error'][-1])
-            self.mse = float("%.2f" % (history.history['mean_squared_error'][-1]))
-            self.val_mse = float("%.2f" % history.history['val_mean_squared_error'][-1])
-            self.mae = float("%.2f" % (history.history['mean_absolute_error'][-1]))
-            self.val_mae = float("%.2f" % history.history['val_mean_absolute_error'][-1])
-            mean = (self.loss + self.val_loss)/2
-            self.fitnessScore = float("%.4f" % mean)
+            self.fitnessScore =  self.val_loss
         else:
             self.model.compile(
                 optimizer=self.optimizer,
@@ -109,19 +102,7 @@ class NNModel():
         return architectureString
     
     def toDict(self):
-        if(self.isRegression):
-            """return {
-                "history": f"Loss: {self.loss},"+
-                f"Validation Loss: {self.val_loss},"+
-                f"mape: {self.mape},"+
-                f"val_mape: {self.val_mape},"+
-                f"mse: {self.mse},"+
-                f"val_mse: {self.val_mse},"+
-                f"mae: {self.mae},"+
-                f"val_mae: {self.val_mae},",
-                "fitnessScore": self.fitnessScore,
-                "architecture": self.architectureString()
-            }"""
+        if(self.taskType == 1):
             return {
                 "history": f"Loss: {self.loss},   Validation Loss: {self.val_loss}",
                 "fitnessScore": self.fitnessScore,

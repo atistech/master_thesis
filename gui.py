@@ -21,7 +21,7 @@ def startSearch():
         "dataset": datasetSelection_value.get(),
         "populationSize": populationSize_value.get(),
         "maxGenerationCount": maxGenerationCount_value.get(),
-        "IsRegression": True if taskType.get()==1 else False
+        "taskType": taskType.get()
     }
     answer = messagebox.askokcancel(message="Aramayı başlatmak istediğinize emin misiniz?")
 
@@ -47,7 +47,7 @@ def startSearch():
                 lastBestModel = bestModel
                 lastGenerationCount = search_engine.generationCount
             else:
-                if(param["IsRegression"]):
+                if(param["taskType"]==1):
                     if(bestModel.fitnessScore < lastBestModel.fitnessScore):
                         lastBestModel = bestModel
                         lastGenerationCount = search_engine.generationCount
