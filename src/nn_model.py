@@ -1,8 +1,9 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+from keras.callbacks import EarlyStopping
 from keras.models import Model as KerasModel
 from keras.layers import Dense, Input
-from keras import metrics
+import keras
 import src.utils as utils
 import random
 
@@ -51,48 +52,46 @@ class NNModel():
             self.layers[index] = Layer(isRandom=True)
 
     def calculateResult(self, dataset):
+        loss, monitor = "", ""
+        metrics = []
         if(self.taskType == 1):
-            self.model.compile(
-                optimizer=self.optimizer,
-                loss="mean_absolute_error",
-                metrics=[
-                    metrics.MeanAbsolutePercentageError(), 
-                    metrics.MeanSquaredError(),
-                    metrics.MeanAbsoluteError(),
-                    metrics.RootMeanSquaredError()
-                ]
-            )
-
-            history = self.model.fit(
-                dataset["x"], dataset["y"],
-                validation_split=0.2,
-                epochs=5,
-                verbose=0
-            )
-
+            loss="mean_absolute_error"
+            metrics.append(keras.metrics.MeanAbsoluteError())
+            monitor = "loss"
+        elif(self.taskType == 2):
+            loss="binary_crossentropy"
+            metrics.append("accuracy")
+            monitor = "accuracy"
+        elif(self.taskType == 3):
+            loss="categorical_crossentropy"
+            metrics.append("accuracy")
+            monitor = "accuracy"
+        
+        self.model.compile(
+            optimizer=self.optimizer,
+            loss=loss, 
+            metrics=metrics
+        )
+        
+        early_stopping = EarlyStopping(monitor=monitor, patience=5)
+        history = self.model.fit(
+            dataset["x"], dataset["y"],
+            validation_split=0.2,
+            epochs=20,
+            verbose=0,
+            callbacks=early_stopping
+        )
+        
+        if(self.taskType == 1):
             self.loss = float("%.4f" % history.history['loss'][-1])
             self.val_loss = float("%.4f" % history.history['val_loss'][-1])
-            self.fitnessScore =  self.val_loss
+            self.fitnessScore = self.val_loss
         else:
-            self.model.compile(
-                optimizer=self.optimizer,
-                loss="categorical_crossentropy", 
-                metrics=["accuracy"]
-            )
-
-            history = self.model.fit(
-                self.dataset["x"], self.dataset["y"],
-                validation_split=0.2,
-                epochs=5, 
-                batch_size=600, 
-                verbose=0
-            )
-
             self.loss = float("%.2f" % history.history['loss'][-1])
             self.accuracy = float("%.2f" % (history.history['accuracy'][-1]*100))
             self.val_loss = float("%.2f" % history.history['val_loss'][-1])
             self.val_accuracy = float("%.2f" % (history.history['val_accuracy'][-1]*100))
-            self.fitnessScore = float("%.2f" % ((self.accuracy+self.val_accuracy)/2))
+            self.fitnessScore = self.val_accuracy
     
     def architectureString(self):
         architectureString = ""
@@ -103,17 +102,12 @@ class NNModel():
     
     def toDict(self):
         if(self.taskType == 1):
-            return {
-                "history": f"Loss: {self.loss},   Validation Loss: {self.val_loss}",
-                "fitnessScore": self.fitnessScore,
-                "architecture": self.architectureString()
-            }
+            history = f"Loss: {self.loss},   Validation Loss: {self.val_loss}"
         else:
-            return {
-                "history": f"accuracy: {self.accuracy},"+
-                f"val_accuracy: {self.val_accuracy},"+
-                f"loss: {self.loss},"+
-                f"val_loss: {self.val_loss}",
-                "fitnessScore": self.fitnessScore,
-                "architecture": self.architectureString()
-            }
+            history = f"Accuracy: {self.accuracy}, Val Accuracy: {self.val_accuracy}",
+        
+        return {
+            "history": history,
+            "fitnessScore": self.fitnessScore,
+            "architecture": self.architectureString()
+        }

@@ -1,3 +1,5 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox

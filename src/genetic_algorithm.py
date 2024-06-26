@@ -32,7 +32,7 @@ class GeneticAlgorithm():
             self.models.append(NNModel(False, newLayers, self.taskType, self.dataset["input"], self.dataset["output"]))
         
     def mutation(self):
-        for model in self.models[2:]:
+        for model in self.models:
             model.updateLayersRandomly()
     
     def calculation(self):
