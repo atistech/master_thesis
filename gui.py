@@ -23,28 +23,41 @@ def startSearch():
         "maxGenerationCount": maxGenerationCount_value.get(),
         "IsRegression": True if taskType.get()==1 else False
     }
-    answer = messagebox.askokcancel(message=param)
+    answer = messagebox.askokcancel(message="Aramayı başlatmak istediğinize emin misiniz?")
 
     if answer:
         startSearchButton.config(state="disabled")
+        saveButton.config(state="disabled")
         tree.delete(*tree.get_children())
         bestResultTree.delete(*bestResultTree.get_children())
         progressbar.start()
         
         search_engine = NNSearchEngine(param)
         
-        bestModel = None
+        global lastBestModel
+        lastBestModel = None
+        lastGenerationCount = 0
         for iteration_models in search_engine:
             for model in iteration_models:
                 model = model.toDict()
                 values_to_insert = [search_engine.generationCount, model["fitnessScore"], model["architecture"], model["history"]]
                 tree.insert("", 'end', values=values_to_insert)
-            bestModel = iteration_models[0]
-        
-        global lastBestModel
-        lastBestModel = bestModel
-        bestModel = bestModel.toDict()
-        values_to_insert = [search_engine.generationCount, bestModel["fitnessScore"], bestModel["architecture"], bestModel["history"]]
+            bestModel = search_engine.finalBestFoundModel()
+            if (lastBestModel is None):
+                lastBestModel = bestModel
+                lastGenerationCount = search_engine.generationCount
+            else:
+                if(param["IsRegression"]):
+                    if(bestModel.fitnessScore < lastBestModel.fitnessScore):
+                        lastBestModel = bestModel
+                        lastGenerationCount = search_engine.generationCount
+                else:
+                    if(bestModel.fitnessScore > lastBestModel.fitnessScore):
+                        lastBestModel = bestModel
+                        lastGenerationCount = search_engine.generationCount
+                
+        bestModel_dict = lastBestModel.toDict()
+        values_to_insert = [lastGenerationCount, bestModel_dict["fitnessScore"], bestModel_dict["architecture"], bestModel_dict["history"]]
         bestResultTree.insert("", 'end', values=values_to_insert)
         progressbar.stop()
         messagebox.showinfo(title="Bilgi", message="Model araması tamamlandı.")

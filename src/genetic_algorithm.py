@@ -17,13 +17,13 @@ class GeneticAlgorithm():
 
     def crossover(self):
         self.models.clear()
-        self.models = [self.firstFittestModel, self.secondFittestModel]
+        #self.models = [self.firstFittestModel, self.secondFittestModel]
 
         layersPool = []
         layersPool.extend(self.firstFittestModel.layers)
         layersPool.extend(self.secondFittestModel.layers)
 
-        for i in range(self.populationSize - len(self.models)):
+        for i in range(self.populationSize):
             random.shuffle(layersPool)
             amount = random.randint(1,3)
             newLayers = []
@@ -38,5 +38,9 @@ class GeneticAlgorithm():
     def calculation(self):
         for model in self.models:
             model.calculateResult(self.dataset)
-        self.models.sort(key=lambda i: i.fitnessScore, reverse=False)
+        if(self.isRegression):
+            reverse = False
+        else:
+            reverse = True
+        self.models.sort(key=lambda i: i.fitnessScore, reverse=reverse)
         return self.models

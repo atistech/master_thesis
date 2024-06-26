@@ -65,8 +65,7 @@ class NNModel():
             history = self.model.fit(
                 dataset["x"], dataset["y"],
                 validation_split=0.2,
-                epochs=5, 
-                batch_size=600,
+                epochs=5,
                 verbose=0
             )
 
