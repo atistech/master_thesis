@@ -32,13 +32,10 @@ def readCSVDataset(file_path):
     #print(outputs.shape)
 
     return {
-        "input":  len(input_heads),
+        "input": len(input_heads),
         "x": inputs,
         "y": outputs,
-        "output": {
-                    "activation": "sigmoid",
-                    "output": len(output_heads)
-                }
+        "output": len(output_heads)
     }
 
 #readCSVDataset(os.getcwd()+"/nn/sample_dataset1.csv")

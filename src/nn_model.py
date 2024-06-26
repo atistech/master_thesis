@@ -16,13 +16,13 @@ class Layer():
             self.activation = activation
 
 class NNModel():
-    def __init__(self, isRandom, layers, isRegression, input_len):
+    def __init__(self, isRandom, layers, isRegression, input_len, output_len):
         if isRandom:
             self.layers = []
             layersCount = utils.randomLayerNums()
             for i in range(layersCount):
                 self.layers.append(Layer(isRandom=True))
-            self.layers.append(Layer(isRandom=False, units=1, activation="sigmoid"))
+            self.layers.append(Layer(isRandom=False, units=output_len, activation="sigmoid"))
         else:
             self.layers = layers
         self.input_len = input_len
