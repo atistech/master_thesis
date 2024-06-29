@@ -17,19 +17,20 @@ class Layer():
             self.activation = activation
 
 class NNModel():
-    def __init__(self, isRandom, layers, taskType, input_len, output_len):
-        if isRandom:
+    def __init__(self, params):
+        self.taskType = params["taskType"]
+        self.input_len = params["input"]
+        if params["isRandom"]:
             self.layers = []
             layersCount = utils.randomLayerNums()
             for i in range(layersCount):
                 self.layers.append(Layer(isRandom=True))
-            self.layers.append(Layer(isRandom=False, units=output_len, activation="sigmoid"))
+            self.layers.append(Layer(isRandom=False, units=params["output"], activation="sigmoid"))
+            self.optimizer = utils.randomModelOptimizers()
         else:
-            self.layers = layers
-        self.input_len = input_len
+            self.layers = params["newLayers"]
+            self.optimizer = params["optimizer"]
         self.toKeras()
-        self.optimizer = utils.randomModelOptimizers()
-        self.taskType = taskType
 
     def toKeras(self):
         input = Input(shape=(self.input_len, ))
@@ -50,6 +51,8 @@ class NNModel():
             else:
                 index = 0
             self.layers[index] = Layer(isRandom=True)
+        if random.randint(0, 1) == 1:
+            self.optimizer = utils.randomModelOptimizers()
 
     def calculateResult(self, dataset):
         loss, monitor = "", ""

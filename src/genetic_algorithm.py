@@ -9,27 +9,47 @@ class GeneticAlgorithm():
         self.taskType = param_dict["taskType"]
         self.populationSize = int(param_dict["populationSize"])
         for i in range(self.populationSize):
-            self.models.append(NNModel(True, [], self.taskType, self.dataset["input"], self.dataset["output"]))
+            params_dict = {
+                "taskType": self.taskType,
+                "input": self.dataset["input"],
+                "output": self.dataset["output"],
+                "newLayers": [],
+                "optimizer": "",
+                "isRandom": True
+            }
+            self.models.append(NNModel(params=params_dict))
 
     def selection(self):
         self.firstFittestModel = self.models[0]
         self.secondFittestModel = self.models[1]
 
     def crossover(self):
+        lastLayer = self.models[0].layers[-1]
         self.models.clear()
-        #self.models = [self.firstFittestModel, self.secondFittestModel]
-
         layersPool = []
         layersPool.extend(self.firstFittestModel.layers)
         layersPool.extend(self.secondFittestModel.layers)
+        optimizersPool = []
+        optimizersPool.append(self.firstFittestModel.optimizer)
+        optimizersPool.append(self.secondFittestModel.optimizer)
 
         for i in range(self.populationSize):
             random.shuffle(layersPool)
+            random.shuffle(optimizersPool)
             amount = random.randint(1,3)
             newLayers = []
             for i in range(amount):
                 newLayers.append(random.choice(layersPool))
-            self.models.append(NNModel(False, newLayers, self.taskType, self.dataset["input"], self.dataset["output"]))
+            newLayers.append(lastLayer)
+            params_dict = {
+                "taskType": self.taskType,
+                "input": self.dataset["input"],
+                "output": self.dataset["output"],
+                "newLayers": newLayers,
+                "optimizer": random.choice(optimizersPool),
+                "isRandom": False
+            }
+            self.models.append(NNModel(params=params_dict))
         
     def mutation(self):
         for model in self.models:
