@@ -25,7 +25,7 @@ def startSearch():
         "maxGenerationCount": maxGenerationCount_value.get(),
         "taskType": taskType.get()
     }
-    answer = messagebox.askokcancel(message="Aramayı başlatmak istediğinize emin misiniz?")
+    answer = messagebox.askokcancel(message="Geliştirmeyi başlatmak istediğinize emin misiniz?")
 
     if answer:
         startSearchButton.config(state="disabled")
@@ -62,16 +62,16 @@ def startSearch():
         values_to_insert = [lastGenerationCount, bestModel_dict["fitnessScore"], bestModel_dict["architecture"], bestModel_dict["history"]]
         bestResultTree.insert("", 'end', values=values_to_insert)
         progressbar.stop()
-        messagebox.showinfo(title="Bilgi", message="Model araması tamamlandı.")
+        messagebox.showinfo(title="Bilgi", message="Model geliştirilmesi tamamlandı.")
         startSearchButton.config(state="active")
         saveButton.config(state="active")
 
 window = tk.Tk()
 window.resizable(False, False)
 window.geometry("850x700")
-window.title("Yapay Sinir Ağı Modeli Arama Motoru")
+window.title("Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı")
 
-ttk.Label(window, text="Yapay Sinir Ağı Modeli Arama Motoru", font=("TkDefaultFont", 12)).pack(anchor="center", pady=10)
+ttk.Label(window, text="Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı", font=("TkDefaultFont", 12)).pack(anchor="center", pady=10)
 
 paramsFrame = tk.Label(window)
 paramsFrame.pack(fill='x', padx=10, pady=10)
@@ -124,7 +124,7 @@ def selectItem(a):
     item = tree.item(curItem)
     messagebox.showinfo(message=str(item))
 
-searchResultsframe = tk.LabelFrame(window, text="Arama Sonuçları", padx=15, pady=15)
+searchResultsframe = tk.LabelFrame(window, text="Geliştirme Sonuçları", padx=15, pady=15)
 searchResultsframe.pack(fill=tk.BOTH, expand=True, padx=10)
     
 tree = ttk.Treeview(searchResultsframe, columns=("1", "2", "3", "4"), show="headings")
@@ -147,7 +147,7 @@ tree.configure(yscrollcommand=tree_scroll_y.set)
 tree.pack(fill=tk.BOTH, expand=True)
 #tree.bind('<ButtonRelease-1>', selectItem)
 
-bestResultframe = tk.LabelFrame(window, text="En İyi Arama Sonucu", padx=20, pady=10)
+bestResultframe = tk.LabelFrame(window, text="En İyi Geliştirme Sonucu", padx=20, pady=10)
 bestResultframe.pack(fill='x', padx=10)
 
 bestResultTree = ttk.Treeview(bestResultframe, columns=("1", "2", "3", "4"), show="headings", height=1)
@@ -173,7 +173,7 @@ def saveModel():
 fileTypeFrame = tk.LabelFrame(bestResultframe, text="Model Kaydetme Ayarları", padx=20, pady=10)
 fileTypeFrame.pack()
 fileType = tk.StringVar()
-fileType.set("h5")
+fileType.set("keras")
 ttk.Radiobutton(fileTypeFrame, text=".h5", width=21, variable=fileType, value="h5").pack(side="left")
 ttk.Radiobutton(fileTypeFrame, text=".keras", width=21, variable=fileType, value="keras").pack(side="left")
 saveButton = ttk.Button(fileTypeFrame, text="Modeli Kaydet", command=saveModel)

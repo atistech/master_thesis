@@ -14,11 +14,8 @@ def randomLayerActivations():
     return random.choice(layerActivations)
 
 def randomModelOptimizers():
-    modelOptimizers = ["rmsprop", "adam"]
+    modelOptimizers = ["rmsprop", "adam", "sgd"]
     return random.choice(modelOptimizers)
-
-# Loss functions of neural networks
-ModelLossFunctions = ["categorical_crossentropy"]
 
 def readCSVDataset(file_path):
     df = pd.read_csv(file_path)

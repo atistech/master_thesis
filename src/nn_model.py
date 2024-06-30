@@ -25,7 +25,7 @@ class NNModel():
             layersCount = utils.randomLayerNums()
             for i in range(layersCount):
                 self.layers.append(Layer(isRandom=True))
-            self.layers.append(Layer(isRandom=False, units=params["output"], activation="sigmoid"))
+            self.layers.append(Layer(isRandom=False, units=params["output"], activation=utils.randomLayerActivations()))
             self.optimizer = utils.randomModelOptimizers()
         else:
             self.layers = params["newLayers"]
