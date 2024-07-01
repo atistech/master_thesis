@@ -1,5 +1,6 @@
 from src.nn_model import NNModel
 import src.utils as utils
+import threading
 import random
 
 class GeneticAlgorithm():
@@ -56,8 +57,14 @@ class GeneticAlgorithm():
             model.updateLayersRandomly()
     
     def calculation(self):
+        threads = []
         for model in self.models:
-            model.calculateResult(self.dataset)
+            t1 = threading.Thread(target=model.calculateResult, args=(self.dataset,))
+            t1.start()
+            threads.append(t1)
+        for t in threads:
+            t.join()
+        
         if(self.taskType == 1):
             reverse = False
         else:

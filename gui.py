@@ -1,5 +1,6 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -69,9 +70,9 @@ def startSearch():
 window = tk.Tk()
 window.resizable(False, False)
 window.geometry("850x700")
-window.title("Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı")
+window.title("Veri Setine Göre Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı")
 
-ttk.Label(window, text="Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı", font=("TkDefaultFont", 12)).pack(anchor="center", pady=10)
+ttk.Label(window, text="Veri Setine Göre Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı", font=("TkDefaultFont", 12)).pack(anchor="center", pady=10)
 
 paramsFrame = tk.Label(window)
 paramsFrame.pack(fill='x', padx=10, pady=10)

@@ -107,7 +107,7 @@ class NNModel():
         if(self.taskType == 1):
             history = f"Loss: {self.loss},   Validation Loss: {self.val_loss}"
         else:
-            history = f"Accuracy: {self.accuracy}, Val Accuracy: {self.val_accuracy}",
+            history = f"Accuracy: {self.accuracy}, Val Accuracy: {self.val_accuracy}"
         
         return {
             "history": history,
