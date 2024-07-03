@@ -70,9 +70,9 @@ def startSearch():
 window = tk.Tk()
 window.resizable(False, False)
 window.geometry("850x700")
-window.title("Veri Setine Göre Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı")
+window.title("Veri Setine Uygun Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı")
 
-ttk.Label(window, text="Veri Setine Göre Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı", font=("TkDefaultFont", 12)).pack(anchor="center", pady=10)
+ttk.Label(window, text="Veri Setine Uygun Otomatik Yapay Sinir Ağı Modeli Geliştirme Aracı", font=("TkDefaultFont", 12)).pack(anchor="center", pady=10)
 
 paramsFrame = tk.Label(window)
 paramsFrame.pack(fill='x', padx=10, pady=10)
@@ -181,6 +181,6 @@ saveButton = ttk.Button(fileTypeFrame, text="Modeli Kaydet", command=saveModel)
 saveButton.pack(side="left")
 saveButton.config(state="disabled")
 
-ttk.Label(window, text="Developed by Atakan Şentürk").pack(anchor='w', padx=10, pady=10)
+ttk.Label(window, text="Developed by M.Atakan Şentürk").pack(anchor='w', padx=10, pady=10)
 
 window.mainloop()
